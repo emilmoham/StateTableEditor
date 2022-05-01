@@ -21,9 +21,21 @@ test('malformed state', () => {
     expect(state).toBe(null);  
 });
 
-test('format', () =>{
+test('format', () => {
     const input = "#$State ;RejectCall; 0 87 87 ;[13] Reject Unknown Inbound Call <6>";
     const state = SwitchState.parseState(input);
     const output = state.format();
     expect(output).toBe(input);
 });
+
+test('too many return states', () => {
+    const input = "#$State ;RejectCall; 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 ;[13] Too many Return states";
+    const state = SwitchState.parseState(input); 
+    expect(state).toBe(null);
+});
+
+test('no return states', () => {
+    const input = "#$State ;RejectCall;   ;[13] No Return states";
+    const state = SwitchState.parseState(input);
+    expect(state).toBe(null);
+}); 

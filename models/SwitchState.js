@@ -1,3 +1,5 @@
+const MAX_STATES = 20;
+const MIN_STATES = 2;
 class SwitchState {
     constructor (id, name, returnStates, description) {
         this.id = id;
@@ -5,6 +7,9 @@ class SwitchState {
         this.returnStates = returnStates;
         this.description = description;
     }
+
+    static get MAX_STATES() { return MAX_STATES; }
+    static get MIN_STATES() { return MIN_STATES; }
 
     SetReturnState(index, state, fillState){
         if (index > 20)
@@ -29,6 +34,8 @@ class SwitchState {
 
         const stateName = data[1];
         const returnStates = data[2].trim().split(' ').map(Number);
+        if(returnStates.length < MIN_STATES || returnStates.length > MAX_STATES)
+            return null;
         const stateId = parseInt(data[3]);
         const stateDesc = data[4];
 
