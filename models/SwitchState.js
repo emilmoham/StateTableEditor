@@ -22,18 +22,22 @@ class SwitchState {
     }
 
     static parseState(text){
-        data = text.match(/#\$State ;(\w{0,})[\ ]?;([\ \d]{0,});\[(\d+)\]\ (.{0,})/);
+        const data = text.match(/#\$State ;(\w{0,})[\ ]?;([\ \d]{0,});\[(\d+)\]\ (.{0,})/);
         
         if(!data)
             return null;
 
         const stateName = data[1];
-        const returnStates = data[2].trim().split(' ');
-        const stateId = data[3];
+        const returnStates = data[2].trim().split(' ').map(Number);
+        const stateId = parseInt(data[3]);
         const stateDesc = data[4];
 
         return new SwitchState(stateId, stateName, returnStates, stateDesc);
-    } 
+    }
+
+    format() {
+        return `#$State ;${this.name}; ${this.returnStates.join(' ')} ;[${this.id}] ${this.description}`
+    }
 }
 
 module.exports = SwitchState;
