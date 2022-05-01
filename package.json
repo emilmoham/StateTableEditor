@@ -1,0 +1,14 @@
+{
+  "name": "prodigy-state-table-editor",
+  "version": "1.0.0",
+  "description": "Tool to edit the app tables for prodigy phone systems",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^28.0.3"
+  }
+}
