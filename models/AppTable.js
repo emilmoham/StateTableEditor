@@ -1,4 +1,5 @@
-const fs = require('fs')
+const fs = require('fs');
+const SwitchState = require('./SwitchState.js');
 
 const READ_ERROR = -1;
 const READ_HEADER = 0;
@@ -37,6 +38,25 @@ class AppTable {
         }
     }
 
+    parseStateLine(line) { 
+        const data = SwitchState.parseState(line);
+        if (!data)
+            return READ_ERROR;
+        return READ_NEXT;
+    }
+
+    parseSectionText(line) {
+        console.log(line)
+        return READ_SECTION_END;
+    }
+
+    parseSectionEnd(line) {
+        if(line.match(/\*{3,}/)){
+            return READ_NEXT;
+        }
+        return READ_SECTION_END;
+    }
+
     read() {
         const appFile = fs.readFileSync(this.filename, 'utf-8');
         const lines = appFile.split(/\r?\n/);
@@ -54,20 +74,13 @@ class AppTable {
                     parseState = this.parseNextLine(line);
                     break;
                 case READ_STATE:
-                    const data = SwitchState.parseState(line);
-                    if (!data)
-                        parseState = READ_ERROR;
-
-                    parseState = READ_NEXT;
+                    parseState = this.parseStateLine(line);
                     break;
                 case READ_SECTION_BEGIN:
-                    console.log(line)
-                    parseState= READ_SECTION_END;
+                    parseState = this.parseSectionText(line);
                     break;
                 case READ_SECTION_END:
-                    if(line.match(/\*{3,}/)){
-                        parseState = READ_NEXT;
-                    }
+                    parseState = this.parseSectionEnd(line)
                     break;
             }
         });

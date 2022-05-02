@@ -35,3 +35,30 @@ test('parse unexpected input', () =>{
     const table = new AppTable();
     expect(table.parseNextLine("a")).toBe(AppTable.READ_ERROR);
 });
+
+test('parse state good input', () => {
+    const table = new AppTable();
+    const input = "#$State ;Load; 0 3 3 3 3 3 ;[2] Load Stuff"
+    expect(table.parseStateLine(input)).toBe(AppTable.READ_NEXT);
+});
+
+test('parse state bad input', () => {
+    const table = new AppTable();
+    const input = "#$State "
+    expect(table.parseStateLine(input)).toBe(AppTable.READ_ERROR);
+});
+
+test('parse section text', () => {
+    const table = new AppTable();
+    expect(table.parseSectionText("*  Test")).toBe(AppTable.READ_SECTION_END);
+});
+
+test('parse section end closing border', () => {
+    const table = new AppTable();
+    expect(table.parseSectionEnd("****************************************")).toBe(AppTable.READ_NEXT);
+});
+
+test('parse section end unexpected characters', () => {
+    const table = new AppTable();
+    expect(table.parseSectionEnd("#$S")).toBe(AppTable.READ_SECTION_END);
+});
