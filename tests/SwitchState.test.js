@@ -96,3 +96,31 @@ test('resolve return state references map incomplete', () => {
 
     expect(rc).toBe(1);
 });
+
+test('set return state add first return state', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    const rc = state0.setReturnState(0, state0);
+    expect(rc).toBe(true);
+    expect(state0.returnStateRefs.length).toBe(1);
+    expect(state0.returnStateRefs[0]).toBe(state0);
+});
+
+test('set return state add return state out of order ', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    const rc = state0.setReturnState(1, state0);
+    expect(rc).toBe(false);
+    expect(state0.returnStateRefs.length).toBe(0);
+});
+
+test('set return state add too many return states', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    const max_states = SwitchState.MAX_STATES;
+    for(let i = 0; i < max_states; i++) {
+        const rc = state0.setReturnState(i, state0);
+        expect(rc).toBe(true);
+    }
+
+    expect(state0.returnStateRefs.length).toBe(max_states);
+    const rc = state0.setReturnState(max_states, state0);
+    expect(rc).toBe(false);
+});

@@ -54,6 +54,20 @@ class SwitchState {
     format(id) {
         return `#$State ;${this.name}; ${this.returnStateIds.join(' ')} ;[${id}] ${this.description}`
     }
+
+    setReturnState(index, state) {
+        if(index >= MAX_STATES) return false;
+
+        if (index < this.returnStateRefs.length) {
+            this.returnStateRefs[index] = state;
+            return true;
+        } else if (index == this.returnStateRefs.length) {
+            this.returnStateRefs.push(state);
+            return true;
+        }
+
+        return false;
+    }
 }
 
 module.exports = SwitchState;
