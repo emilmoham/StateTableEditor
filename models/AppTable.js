@@ -42,11 +42,12 @@ class AppTable {
         const data = SwitchState.parseState(line);
         if (!data)
             return READ_ERROR;
+        this.stateMap.push(data);
         return READ_NEXT;
     }
 
     parseSectionText(line) {
-        console.log(line)
+        //TODO
         return READ_SECTION_END;
     }
 
@@ -85,6 +86,10 @@ class AppTable {
             }
         });
 
+        this.stateMap.forEach(element => {
+            element.resolveReturnStateReferences(this.stateMap)
+        });
+
         return true;
     }
 
@@ -92,6 +97,17 @@ class AppTable {
         this.stateMap.forEach(element => {
             console.log(element);
         });
+    }
+
+    print() {
+        let outBytes = "";
+        for(let i = 0; i < this.stateMap.length; i++) {
+            outBytes = outBytes.concat(i);
+            outBytes = outBytes.concat('\n');
+            outBytes = outBytes.concat(this.stateMap[i].format(i))
+            outBytes = outBytes.concat('\n');
+        }
+        console.log(outBytes)
     }
 }
 
