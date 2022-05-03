@@ -1,11 +1,11 @@
-import { SwitchState } from './models/SwitchState.js';
+const SwitchState = require('./models/SwitchState.js');
 //import { Section } from './models/Section.js';
-import { AppTable } from './models/AppTable.js';
+const AppTable = require('./models/AppTable.js');
 
 function TestReadAppTable(){
     const table = new AppTable("sample.app");
     table.read();
-    table.show();
+    table.print();
 }
 
 function TestSwitchState() {
