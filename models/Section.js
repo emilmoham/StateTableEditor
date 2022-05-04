@@ -1,7 +1,6 @@
 class Section {
-    constructor (){
-        this.descriptionLines = [];
-        this.firstState = -1; 
+    constructor (descriptionLines = []){
+        this.descriptionLines = descriptionLines;
     }
 
     parseDescriptionLine(line){

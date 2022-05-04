@@ -18,7 +18,7 @@ test('parse blank line', () => {
 
 test('parse header start', () => {
     const table = new AppTable();
-    expect(table.parseNextLine("****************************************")).toBe(AppTable.READ_SECTION_BEGIN);
+    expect(table.parseNextLine("****************************************")).toBe(AppTable.READ_SECTION);
 });
 
 test('parse state single digit number', () => {
@@ -48,17 +48,22 @@ test('parse state bad input', () => {
     expect(table.parseStateLine(input)).toBe(AppTable.READ_ERROR);
 });
 
-test('parse section text', () => {
+test('parse section text normal description', () => {
     const table = new AppTable();
-    expect(table.parseSectionText("*  Test")).toBe(AppTable.READ_SECTION_END);
+    expect(table.parseSection("*  Test(23s)? and more characters")).toBe(AppTable.READ_SECTION);
+});
+
+test('parse section end blank line', () => {
+    const table = new AppTable();
+    expect(table.parseSection("")).toBe(AppTable.READ_SECTION);
 });
 
 test('parse section end closing border', () => {
     const table = new AppTable();
-    expect(table.parseSectionEnd("****************************************")).toBe(AppTable.READ_NEXT);
+    expect(table.parseSection("****************************************")).toBe(AppTable.READ_NEXT);
 });
 
 test('parse section end unexpected characters', () => {
     const table = new AppTable();
-    expect(table.parseSectionEnd("#$S")).toBe(AppTable.READ_SECTION_END);
+    expect(table.parseSection("#$S")).toBe(AppTable.READ_ERROR);
 });

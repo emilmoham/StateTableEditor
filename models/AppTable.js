@@ -1,26 +1,26 @@
 const fs = require('fs');
+const Section = require('./Section.js');
 const SwitchState = require('./SwitchState.js');
 
 const READ_ERROR = -1;
 const READ_HEADER = 0;
 const READ_NEXT = 1;
 const READ_STATE = 2;
-const READ_SECTION_BEGIN = 3;
-const READ_SECTION_END = 4;
+const READ_SECTION = 3;
 
 class AppTable {
     
     constructor (filename = "sample.app") {
         this.filename = filename;
         this.stateMap = [];
+        this.sectionMap = new Map();
     }
 
     static get READ_ERROR() { return READ_ERROR; }
     static get READ_HEADER() { return READ_HEADER; }
     static get READ_NEXT() { return READ_NEXT; }
     static get READ_STATE() { return READ_STATE; }
-    static get READ_SECTION_BEGIN() { return READ_SECTION_BEGIN; }
-    static get READ_SECTION_END() { return READ_SECTION_END; }
+    static get READ_SECTION() { return READ_SECTION; }
 
     parseHeader(line) {
         return line === "#$HEADER; NULL" ? READ_NEXT : READ_ERROR;
@@ -28,7 +28,7 @@ class AppTable {
 
     parseNextLine(line){
         if (line[0] == '*'){
-            return READ_SECTION_BEGIN;
+            return READ_SECTION;
         } else if (line.match(/\d+/)) {
             return READ_STATE;
         } else if (line == "") {
@@ -46,16 +46,27 @@ class AppTable {
         return READ_NEXT;
     }
 
-    parseSectionText(line) {
-        //TODO
-        return READ_SECTION_END;
-    }
+    parseSection(line) {
+        if(line.length == 0)
+            return READ_SECTION;
 
-    parseSectionEnd(line) {
-        if(line.match(/\*{3,}/)){
+        if(line.length > 0 && !line.match(/\*{1,}(\s{2,})?/))
+            return READ_ERROR;
+        
+        const lastState = this.sectionMap[this.sectionMap.length - 1];
+
+        if (line.match(/\*{3,}/)) {
             return READ_NEXT;
         }
-        return READ_SECTION_END;
+
+        let section = this.sectionMap.get(lastState);
+        if (section == undefined) {
+            section = new Section();
+            this.sectionMap.set(lastState, section);
+        }
+        section.parseDescriptionLine(line);
+
+        return READ_SECTION;
     }
 
     read() {
@@ -77,11 +88,8 @@ class AppTable {
                 case READ_STATE:
                     parseState = this.parseStateLine(line);
                     break;
-                case READ_SECTION_BEGIN:
-                    parseState = this.parseSectionText(line);
-                    break;
-                case READ_SECTION_END:
-                    parseState = this.parseSectionEnd(line)
+                case READ_SECTION:
+                    parseState = this.parseSection(line);
                     break;
             }
         });
