@@ -22,17 +22,19 @@ class AppTable {
     static get READ_STATE() { return READ_STATE; }
     static get READ_SECTION() { return READ_SECTION; }
 
+    get stateCount() { return this.stateMap.length; }
+
     parseHeader(line) {
         return line === "#$HEADER; NULL" ? READ_NEXT : READ_ERROR;
     }
 
     parseNextLine(line){
-        if (line[0] == '*'){
+        if(line.length == 0){
+            return READ_NEXT;
+        } else if (line[0] == '*'){
             return READ_SECTION;
         } else if (line.match(/\d+/)) {
             return READ_STATE;
-        } else if (line == "") {
-            return READ_NEXT;
         } else {
             return READ_ERROR;
         }
@@ -101,15 +103,9 @@ class AppTable {
         return true;
     }
 
-    show() {
-        this.stateMap.forEach(element => {
-            console.log(element);
-        });
-    }
-
     print() {
         let outBytes = "";
-        for(let i = 0; i < this.stateMap.length; i++) {
+        for(let i = 0; i < this.stateCount; i++) {
             outBytes = outBytes.concat(i);
             outBytes = outBytes.concat('\n');
             outBytes = outBytes.concat(this.stateMap[i].format(i))
@@ -117,6 +113,28 @@ class AppTable {
         }
         console.log(outBytes)
     }
+
+    resolveAllStateReturnIds() { return false; } // TODO
+    resolveAllStateReferences() { return false; } // TODO
+    
+    insertState(parentState = null, before = false) { 
+        if(this.stateCount == 0) {
+            if(parentState == null) {
+                const state = new SwitchState("myNewState", [], [], "myNewDescription");
+                this.stateMap.push(state);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    deleteState() { return false; } // TODO
+
+    insertSection() { return false; } // TODO
+    deleteSection() { return false; } // TODO
+
+    duplicateState() { return false; } // TODO
+    duplicateRange() { return false; } // TODO
 }
 
 module.exports = AppTable;

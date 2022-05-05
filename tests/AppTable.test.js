@@ -67,3 +67,69 @@ test('parse section end unexpected characters', () => {
     const table = new AppTable();
     expect(table.parseSection("#$S")).toBe(AppTable.READ_ERROR);
 });
+
+test('get state count', () => {
+    const table = new AppTable();
+    expect(table.stateCount).toBe(0);
+});
+
+// test('resolve all state return ids all references defined', () => {
+//     const table = new AppTable();
+//     expect(table.resolveAllStateReturnIds()).toBe(true);
+// });
+
+// test('resolve all state return ids missing reference', () => {
+//     const table = new AppTable();
+//     expect(table.resolveAllStateReturnIds()).toBe(true);
+// });
+
+// test('resolve all state return references all ids defined', () => {
+//     const table = new AppTable();
+//     expect(table.resolveAllStateReferences()).toBe(true);
+// });
+
+// test('resolve all state return ids missing id', () => {
+//     const table = new AppTable();
+//     expect(table.resolveAllStateReferences()).toBe(true);
+// });
+
+test('insert state no args as first state', () => {
+    const table = new AppTable();
+    const rc = table.insertState();
+    expect(rc).toBe(true);
+    expect(table.stateMap.length).toBe(1);
+});
+
+test('insert state no args as state 2+', () => {
+    const table = new AppTable();
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    expect(table.stateMap.length).toBe(1);
+    rc = table.insertState();
+    expect(rc).toBe(false);
+    expect(table.stateMap.length).toBe(1);
+});
+
+// test('insert state before valid state', () =>{ 
+//     const table = new AppTable();
+//     const rc = table.insertState();
+//     expect(rc).toBe(true);
+// });
+
+// test('insert state after valid state', () =>{ 
+//     const table = new AppTable();
+//     const rc = table.insertState();
+//     expect(rc).toBe(true);
+// });
+
+// test('insert state before invalid state', () =>{ 
+//     const table = new AppTable();
+//     const rc = table.insertState();
+//     expect(rc).toBe(true);
+// });
+
+// test('insert state after invalid state', () =>{ 
+//     const table = new AppTable();
+//     const rc = table.insertState();
+//     expect(rc).toBe(true);
+// });
