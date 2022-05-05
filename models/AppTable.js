@@ -55,7 +55,7 @@ class AppTable {
         if(line.length > 0 && !line.match(/\*{1,}(\s{2,})?/))
             return READ_ERROR;
         
-        const lastState = this.sectionMap[this.sectionMap.length - 1];
+        const lastState = this.stateMap[this.stateMap.length - 1];
 
         if (line.match(/\*{3,}/)) {
             return READ_NEXT;
@@ -106,12 +106,20 @@ class AppTable {
     print() {
         let outBytes = "";
         for(let i = 0; i < this.stateCount; i++) {
+            const state = this.stateMap[i];
+
             outBytes = outBytes.concat(i);
             outBytes = outBytes.concat('\n');
-            outBytes = outBytes.concat(this.stateMap[i].format(i))
+            outBytes = outBytes.concat(state.format(i))
             outBytes = outBytes.concat('\n');
+
+            
+            const nextSection = this.sectionMap.get(state);
+            if (nextSection != undefined) {
+                outBytes = outBytes.concat(`\n${nextSection.format()}\n`);
+            }
         }
-        console.log(outBytes)
+        console.log(outBytes);
     }
 
     resolveAllStateReturnIds() { return false; } // TODO
