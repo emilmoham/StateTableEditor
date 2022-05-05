@@ -40,7 +40,7 @@ test('parse description line multiple', () => {
 
 test('format single line description', () => {
     const input = "this is line number 1";
-    const output = `****************************************\n*  ${input}\n****************************************`;
+    const output = `****************************************\n*  ${input}\n\n****************************************`;
     const section = new Section();
     section.descriptionLines = [input];
     expect(section.format()).toBe(output);
@@ -49,7 +49,7 @@ test('format single line description', () => {
 test('format multiple line description', () => {
     const input0 = "this is line number 1";
     const input1 = "this is line number 2";
-    const output = `****************************************\n*  ${input0}\n*  ${input1}\n****************************************`;
+    const output = `****************************************\n*  ${input0}\n*  ${input1}\n\n****************************************`;
     const section = new Section();
     section.descriptionLines = [input0, input1];
     expect(section.format()).toBe(output);
