@@ -125,18 +125,46 @@ class AppTable {
     resolveAllStateReturnIds() { return false; } // TODO
     resolveAllStateReferences() { return false; } // TODO
     
-    insertState(parentState = null, before = false) { 
-        if(this.stateCount == 0) {
-            if(parentState == null) {
-                const state = new SwitchState("myNewState", [], [], "myNewDescription");
-                this.stateMap.push(state);
-                return true;
-            }
-        }
-        return false;
+    insertState(parentState = null, after = true) { 
+        const state = new SwitchState("myNewState", [], [], "myNewDescription");
+        
+        if(this.stateCount > 0 && parentState == null)
+            return false; 
+        
+        let parentIndex = 0;
+        if (parentState != null)
+            parentIndex = this.stateMap.indexOf(parentState);
+
+        if(after)
+            parentIndex = parentIndex + 1;
+        
+        this.stateMap.splice(parentIndex, 0, state)
+        return true;
     }
 
-    deleteState() { return false; } // TODO
+    deleteState(state, replacmentState=null) { 
+        const stateIndex = this.stateMap.indexOf(state);
+        const replacmentStateIndex = this.stateMap.indexOf(replacmentState); 
+
+        if (stateIndex == -1 || (replacmentStateIndex == -1 && this.stateCount > 1))
+            return false;
+
+        if (this.stateCount == 1 && stateIndex == 0) {
+            this.stateMap.pop()
+            return true;
+        }
+        
+        // TODO
+        // this.stateMap.forEach(element => {
+        //     element.returnStateRefs.forEach(stateRef => {
+        //         if (stateRef == state)
+        //             stateRef = replacmentState;
+        //     })
+        // });
+
+        this.stateMap.splice(stateIndex, 1);
+        return true; 
+    }
 
     insertSection() { return false; } // TODO
     deleteSection() { return false; } // TODO
