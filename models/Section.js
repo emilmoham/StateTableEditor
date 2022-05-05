@@ -15,7 +15,7 @@ class Section {
         this.descriptionLines.forEach(element => {
             text = text.concat(`*  ${element}\n`);
         });
-        text = text.concat("****************************************");
+        text = text.concat("\n****************************************");
         return text;
     }
 }
