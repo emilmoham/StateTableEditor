@@ -142,11 +142,11 @@ class AppTable {
         return true;
     }
 
-    deleteState(state, replacmentState=null) { 
+    deleteState(state, replacementState=null) { 
         const stateIndex = this.stateMap.indexOf(state);
-        const replacmentStateIndex = this.stateMap.indexOf(replacmentState); 
+        const replacementStateIndex = this.stateMap.indexOf(replacementState); 
 
-        if (stateIndex == -1 || (replacmentStateIndex == -1 && this.stateCount > 1))
+        if (stateIndex == -1 || (replacementStateIndex == -1 && this.stateCount > 1))
             return false;
 
         if (this.stateCount == 1 && stateIndex == 0) {
@@ -155,12 +155,12 @@ class AppTable {
         }
         
         // TODO
-        // this.stateMap.forEach(element => {
-        //     element.returnStateRefs.forEach(stateRef => {
-        //         if (stateRef == state)
-        //             stateRef = replacmentState;
-        //     })
-        // });
+        this.stateMap.forEach(element => {
+            element.returnStateRefs.forEach(stateRef => {
+                if (stateRef == state)
+                    stateRef = replacementState;
+            })
+        });
 
         this.stateMap.splice(stateIndex, 1);
         return true; 

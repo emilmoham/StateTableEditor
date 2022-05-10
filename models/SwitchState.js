@@ -6,6 +6,7 @@ class SwitchState {
         this.name = name;
         this.returnStateIds = returnStateIds;
         this.returnStateRefs = returnStateRefs;
+        this.callers = new Map();
         this.description = description;
     }
 
@@ -58,15 +59,44 @@ class SwitchState {
     setReturnState(index, state) {
         if(index >= MAX_STATES) return false;
 
-        if (index < this.returnStateRefs.length) {
+        if (index > this.returnStateRefs.length) return false;
+
+        if (this.returnStateRefs[index] == state) return true;
+
+        if (index < this.returnStateRefs.length){
+            const oldState = this.returnStateRefs[index];
+            this.removeCaller(oldState);
             this.returnStateRefs[index] = state;
-            return true;
-        } else if (index == this.returnStateRefs.length) {
+        }
+        else if (index == this.returnStateRefs.length) {
             this.returnStateRefs.push(state);
-            return true;
+        }
+        
+        this.addCaller(state);
+        return true;
+    }
+
+    addCaller(state){
+        let x = this.callers.get(state);
+        if (x == undefined) {
+            this.callers.set(state, 1);
+            return;
+        }
+        x++;
+        this.callers.set(state, x);
+    }
+
+    removeCaller(state) {
+        let x = this.callers.get(state)
+        if (x == undefined)
+            return
+        if (x == 1) {
+            this.callers.delete(state);
+            return;
         }
 
-        return false;
+        x--;
+        this.callers.set(state, x);
     }
 }
 
