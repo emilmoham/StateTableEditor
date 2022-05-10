@@ -96,9 +96,7 @@ class AppTable {
             }
         });
 
-        this.stateMap.forEach(element => {
-            element.resolveReturnStateReferences(this.stateMap)
-        });
+        this.resolveAllStateReferences();
 
         return true;
     }
@@ -122,11 +120,20 @@ class AppTable {
         console.log(outBytes);
     }
 
-    resolveAllStateReturnIds() { return false; } // TODO
-    resolveAllStateReferences() { return false; } // TODO
+    resolveAllStateReturnIds() { 
+        this.stateMap.forEach(element => {
+            element.resolveReturnStateIds(this.stateMap);
+        });
+    } 
+
+    resolveAllStateReferences() { 
+        this.stateMap.forEach(element => {
+            element.resolveReturnStateReferences(this.stateMap)
+        });
+    }
     
-    insertState(parentState = null, after = true) { 
-        const state = new SwitchState("myNewState", [], [], "myNewDescription");
+    insertState(parentState = null, after = true, name = "myNewState", description = "myNewStateDescription") { 
+        const state = new SwitchState(name, [], [], description);
         
         if(this.stateCount > 0 && parentState == null)
             return false; 
@@ -153,13 +160,13 @@ class AppTable {
             this.stateMap.pop()
             return true;
         }
-        
-        // TODO
-        this.stateMap.forEach(element => {
-            element.returnStateRefs.forEach(stateRef => {
-                if (stateRef == state)
-                    stateRef = replacementState;
-            })
+
+        state.callers.forEach((count, caller) => {
+            for(let i = 0; i < caller.returnStateRefs.length; i++){
+                if(caller.returnStateRefs[i] == state) {
+                    caller.setReturnState(i, replacementState);
+                }
+            }
         });
 
         this.stateMap.splice(stateIndex, 1);
