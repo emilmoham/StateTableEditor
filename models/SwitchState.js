@@ -31,7 +31,7 @@ class SwitchState {
             const element = this.returnStateIds[i];
             if (element >= map.length)
                 return element;
-            this.returnStateRefs.push(map[element]);
+            this.setReturnState(i, map[element]);
         }
         return -1;
     }
