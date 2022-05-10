@@ -240,11 +240,16 @@ test('delete state point to valid state', () => {
     state2.setReturnState(1, state2);
     state2.setReturnState(2, state1);// 0 2 1
 
+    expect(state0.returnStateRefs[1].name).toBe("state1")
+    expect(state0.returnStateRefs[2].name).toBe("state1");
+    expect(state2.returnStateRefs[2].name).toBe("state1");
+
     rc = table.deleteState(state1, state0);
     expect(rc).toBe(true);
     
     expect(table.stateCount).toBe(2);
 
+    expect(state0.returnStateRefs[1].name).toBe("state0")
     expect(state0.returnStateRefs[2].name).toBe("state0");
     expect(state2.returnStateRefs[2].name).toBe("state0");
 });
