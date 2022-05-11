@@ -127,24 +127,28 @@ test('insert state after valid state', () =>{
     let rc = table.insertState();
     expect(rc).toBe(true);
     const parentState = table.stateMap[0];
-    //parentState.name = 'parent';
     rc = table.insertState(parentState, true);
     expect(rc).toBe(true);
     expect(table.stateCount).toBe(2);
     expect(parentState).toStrictEqual(table.stateMap[0]);
 });
 
-// test('insert state before invalid state', () =>{ 
-//     const table = new AppTable();
-//     const rc = table.insertState();
-//     expect(rc).toBe(false);
-// });
+test('insert state before invalid state', () =>{ 
+    const table = new AppTable();
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    rc = table.insertState(table, false, "state2", "state 2");
+    expect(rc).toBe(false);
+});
 
-// test('insert state after invalid state', () =>{ 
-//     const table = new AppTable();
-//     const rc = table.insertState();
-//     expect(rc).toBe(false);
-// });
+test('insert state after invalid state', () =>{ 
+    const table = new AppTable();
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    const parent = table.stateMap[0];
+    rc = table.insertState(table, true, "state2", "state 2");
+    expect(rc).toBe(false);
+});
 
 test('delete invlaid state', () => {
     const table = new AppTable();

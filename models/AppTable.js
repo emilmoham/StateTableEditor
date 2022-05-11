@@ -141,6 +141,9 @@ class AppTable {
         let parentIndex = 0;
         if (parentState != null)
             parentIndex = this.stateMap.indexOf(parentState);
+        
+        if(parentIndex == -1)
+            return false;
 
         if(after)
             parentIndex = parentIndex + 1;
