@@ -73,26 +73,6 @@ test('get state count', () => {
     expect(table.stateCount).toBe(0);
 });
 
-// test('resolve all state return ids all references defined', () => {
-//     const table = new AppTable();
-//     expect(table.resolveAllStateReturnIds()).toBe(true);
-// });
-
-// test('resolve all state return ids missing reference', () => {
-//     const table = new AppTable();
-//     expect(table.resolveAllStateReturnIds()).toBe(true);
-// });
-
-// test('resolve all state return references all ids defined', () => {
-//     const table = new AppTable();
-//     expect(table.resolveAllStateReferences()).toBe(true);
-// });
-
-// test('resolve all state return ids missing id', () => {
-//     const table = new AppTable();
-//     expect(table.resolveAllStateReferences()).toBe(true);
-// });
-
 test('insert state no args as first state', () => {
     const table = new AppTable();
     const rc = table.insertState();
@@ -115,7 +95,6 @@ test('insert state before valid state', () =>{
     let rc = table.insertState();
     expect(rc).toBe(true);
     const parentState = table.stateMap[0];
-    //parentState.name = 'parent';
     rc = table.insertState(parentState, false);
     expect(rc).toBe(true);
     expect(table.stateCount).toBe(2);
