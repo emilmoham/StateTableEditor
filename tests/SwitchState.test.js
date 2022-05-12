@@ -124,3 +124,62 @@ test('set return state add too many return states', () => {
     const rc = state0.setReturnState(max_states, state0);
     expect(rc).toBe(false);
 });
+
+test('set return state add state already at index', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    let rc = state0.setReturnState(0, state0);
+    expect(rc).toBe(true)
+    expect(state0.returnStateRefs.length).toBe(1);
+    rc = state0.setReturnState(0, state0);
+    expect(rc).toBe(true);
+});
+
+test('add caller first reference', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    const state1 = new SwitchState("state1", [], [], "test state 1");
+
+    state0.addCaller(state1);
+    expect(state0.callers.get(state1)).toBe(1);
+});
+
+test('add caller reference 2+', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    const state1 = new SwitchState("state1", [], [], "test state 1");
+
+    state0.addCaller(state1);
+    state0.addCaller(state1);
+    state0.addCaller(state1);
+    expect(state0.callers.get(state1)).toBe(3);
+});
+
+
+test('remove caller only reference', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    const state1 = new SwitchState("state1", [], [], "test state 1");
+
+    state0.addCaller(state1);
+    expect(state0.callers.get(state1)).toBe(1);
+
+    state0.removeCaller(state1);
+    expect(state0.callers.get(state1)).toBe(undefined);
+});
+
+test('remove caller multiple references', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    const state1 = new SwitchState("state1", [], [], "test state 1");
+
+    state0.addCaller(state1);
+    state0.addCaller(state1);
+    expect(state0.callers.get(state1)).toBe(2);
+
+    state0.removeCaller(state1);
+    expect(state0.callers.get(state1)).toBe(1);
+});
+
+test('remove caller invalid reference', () => {
+    const state0 = new SwitchState("state0", [], [], "test state 0");
+    const state1 = new SwitchState("state1", [], [], "test state 1");
+
+    state0.removeCaller(state1);
+    expect(state0.callers.get(state1)).toBe(undefined);
+})

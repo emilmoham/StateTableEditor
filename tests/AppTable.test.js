@@ -73,63 +73,256 @@ test('get state count', () => {
     expect(table.stateCount).toBe(0);
 });
 
-// test('resolve all state return ids all references defined', () => {
-//     const table = new AppTable();
-//     expect(table.resolveAllStateReturnIds()).toBe(true);
-// });
-
-// test('resolve all state return ids missing reference', () => {
-//     const table = new AppTable();
-//     expect(table.resolveAllStateReturnIds()).toBe(true);
-// });
-
-// test('resolve all state return references all ids defined', () => {
-//     const table = new AppTable();
-//     expect(table.resolveAllStateReferences()).toBe(true);
-// });
-
-// test('resolve all state return ids missing id', () => {
-//     const table = new AppTable();
-//     expect(table.resolveAllStateReferences()).toBe(true);
-// });
-
 test('insert state no args as first state', () => {
     const table = new AppTable();
     const rc = table.insertState();
     expect(rc).toBe(true);
-    expect(table.stateMap.length).toBe(1);
+    expect(table.stateCount).toBe(1);
 });
 
 test('insert state no args as state 2+', () => {
     const table = new AppTable();
     let rc = table.insertState();
     expect(rc).toBe(true);
-    expect(table.stateMap.length).toBe(1);
+    expect(table.stateCount).toBe(1);
     rc = table.insertState();
     expect(rc).toBe(false);
-    expect(table.stateMap.length).toBe(1);
+    expect(table.stateCount).toBe(1);
 });
 
-// test('insert state before valid state', () =>{ 
-//     const table = new AppTable();
-//     const rc = table.insertState();
-//     expect(rc).toBe(true);
-// });
+test('insert state before valid state', () =>{ 
+    const table = new AppTable();
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    const parentState = table.stateMap[0];
+    rc = table.insertState(parentState, false);
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(2);
+    expect(parentState).toStrictEqual(table.stateMap[1]);
+});
 
-// test('insert state after valid state', () =>{ 
-//     const table = new AppTable();
-//     const rc = table.insertState();
-//     expect(rc).toBe(true);
-// });
+test('insert state after valid state', () =>{ 
+    const table = new AppTable();
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    const parentState = table.stateMap[0];
+    rc = table.insertState(parentState, true);
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(2);
+    expect(parentState).toStrictEqual(table.stateMap[0]);
+});
 
-// test('insert state before invalid state', () =>{ 
-//     const table = new AppTable();
-//     const rc = table.insertState();
-//     expect(rc).toBe(true);
-// });
+test('insert state before invalid state', () =>{ 
+    const table = new AppTable();
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    rc = table.insertState(table, false, "state2", "state 2");
+    expect(rc).toBe(false);
+});
 
-// test('insert state after invalid state', () =>{ 
-//     const table = new AppTable();
-//     const rc = table.insertState();
-//     expect(rc).toBe(true);
-// });
+test('insert state after invalid state', () =>{ 
+    const table = new AppTable();
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    const parent = table.stateMap[0];
+    rc = table.insertState(table, true, "state2", "state 2");
+    expect(rc).toBe(false);
+});
+
+test('delete invlaid state', () => {
+    const table = new AppTable();
+    const rc = table.deleteSection(table);
+    expect(rc).toBe(false);
+});
+
+test('delete state single state exists', () => {
+    const table = new AppTable();
+    
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(1);
+
+    const state = table.stateMap[0];
+    rc = table.deleteState(state);
+    
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(0);
+});
+
+test('delete state no replacement multiple states exist ', () => {
+    const table = new AppTable();
+    
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+
+    const parentState = table.stateMap[0];
+    rc = table.insertState(parentState, true);
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(2);
+
+    const state = table.stateMap[0];
+    rc = table.deleteState(state);
+    
+    expect(rc).toBe(false);
+    expect(table.stateCount).toBe(2);
+});
+
+test('delete state single state exists point to invalid state', () => {
+    const table = new AppTable();
+    
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(1);
+
+    const state = table.stateMap[0];
+    rc = table.deleteState(state, table);
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(0);
+});
+
+test('delete state multiple states exist point to invalid state', () => {
+    const table = new AppTable();
+    
+    let rc = table.insertState();
+    expect(rc).toBe(true);
+
+    const parentState = table.stateMap[0];
+
+    rc = table.insertState(parentState, true);
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(2);
+
+    rc = table.deleteState(parentState, table);
+    expect(rc).toBe(false);
+
+    expect(table.stateCount).toBe(2);
+});
+
+test('delete state point to valid state', () => {
+    const table = new AppTable();
+
+    let rc = table.insertState(null, true, "state0", "state 0");
+    expect(rc).toBe(true);
+    const state0 = table.stateMap[0];
+
+    rc = table.insertState(state0, true, "state1", "state 1");
+    expect(rc).toBe(true);
+    const state1 = table.stateMap[1];
+
+    rc = table.insertState(state1, true, "state2", "state 2");
+    expect(rc).toBe(true);
+    const state2 = table.stateMap[2];
+
+    state0.setReturnState(0, state0);
+    state0.setReturnState(1, state1);
+    state0.setReturnState(2, state1);// 0 1 1 
+    state1.setReturnState(0, state0);
+    state1.setReturnState(1, state2);
+    state1.setReturnState(2, state2);// 0 2 2
+    state2.setReturnState(0, state0);
+    state2.setReturnState(1, state2);
+    state2.setReturnState(2, state1);// 0 2 1
+
+    expect(state0.returnStateRefs[1].name).toBe("state1")
+    expect(state0.returnStateRefs[2].name).toBe("state1");
+    expect(state2.returnStateRefs[2].name).toBe("state1");
+
+    rc = table.deleteState(state1, state0);
+    expect(rc).toBe(true);
+    
+    expect(table.stateCount).toBe(2);
+
+    expect(state0.returnStateRefs[1].name).toBe("state0")
+    expect(state0.returnStateRefs[2].name).toBe("state0");
+    expect(state2.returnStateRefs[2].name).toBe("state0");
+});
+
+test('insert section single line', () => {
+    const sectionLines = ["test"];
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+    const lastState = table.stateMap[0];
+
+    rc = table.insertSection(lastState, sectionLines);
+    expect(rc).toBe(true);
+    expect(table.sectionMap.get(lastState).descriptionLines).toBe(sectionLines);
+});
+
+test('insert section multiple lines', () => {
+    const sectionLines = ["test", "other test"];
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+    const lastState = table.stateMap[0];
+
+    rc = table.insertSection(lastState, sectionLines);
+    expect(rc).toBe(true);
+    expect(table.sectionMap.get(lastState).descriptionLines).toBe(sectionLines);
+});
+
+test('insert section invalid after state', () => {
+    const sectionLines = ["test"];
+    const table = new AppTable();
+    let rc = table.insertSection(table, sectionLines);
+    expect(rc).toBe(false);
+});
+
+test('insert section at state already before another section', () => {
+    const sectionLines = ["test"];
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+    const lastState = table.stateMap[0];
+
+    rc = table.insertSection(lastState, sectionLines);
+    expect(rc).toBe(true);
+    
+    rc = table.insertSection(lastState, sectionLines);
+    expect(rc).toBe(false);
+});
+
+test('delete valid section', () => {
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+
+    const lastState = table.stateMap[0];
+    rc = table.insertSection(lastState, ["test"]);
+    expect(rc).toBe(true);
+    const section = table.sectionMap.get(lastState);
+    rc = table.deleteSection(section);
+    expect(rc).toBe(true);
+});
+
+test('delete invalid section', () => {
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+
+    const lastState = table.stateMap[0];
+    rc = table.insertSection(lastState, ["test"]);
+    expect(rc).toBe(true);
+    const section = table.sectionMap.get(lastState);
+    rc = table.deleteSection(section);
+    expect(rc).toBe(true);
+    rc = table.deleteSection(section);
+    expect(rc).toBe(false);
+});
+
+test('insert state after a state before section', () => {
+    const table = new AppTable();
+    
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+
+    const parentState = table.stateMap[0];
+    rc = table.insertSection(parentState, ["test"]);
+    expect(rc).toBe(true);
+    const section = table.sectionMap.get(parentState);
+    expect(section.parentState).toBe(parentState);
+    
+    rc = table.insertState(parentState, true, "state1", "state 1");
+    const childState = table.stateMap[1];
+    expect(section.parentState).toBe(childState);
+});

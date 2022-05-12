@@ -63,7 +63,7 @@ class AppTable {
 
         let section = this.sectionMap.get(lastState);
         if (section == undefined) {
-            section = new Section();
+            section = new Section(lastState);
             this.sectionMap.set(lastState, section);
         }
         section.parseDescriptionLine(line);
@@ -96,9 +96,7 @@ class AppTable {
             }
         });
 
-        this.stateMap.forEach(element => {
-            element.resolveReturnStateReferences(this.stateMap)
-        });
+        this.resolveAllStateReferences();
 
         return true;
     }
@@ -122,24 +120,88 @@ class AppTable {
         console.log(outBytes);
     }
 
-    resolveAllStateReturnIds() { return false; } // TODO
-    resolveAllStateReferences() { return false; } // TODO
+    resolveAllStateReturnIds() { 
+        this.stateMap.forEach(element => {
+            element.resolveReturnStateIds(this.stateMap);
+        });
+    } 
+
+    resolveAllStateReferences() { 
+        this.stateMap.forEach(element => {
+            element.resolveReturnStateReferences(this.stateMap)
+        });
+    }
     
-    insertState(parentState = null, before = false) { 
-        if(this.stateCount == 0) {
-            if(parentState == null) {
-                const state = new SwitchState("myNewState", [], [], "myNewDescription");
-                this.stateMap.push(state);
-                return true;
+    insertState(parentState = null, after = true, name = "myNewState", description = "myNewStateDescription") { 
+        const state = new SwitchState(name, [], [], description);
+        
+        if(this.stateCount > 0 && parentState == null)
+            return false; 
+        
+        let parentIndex = 0;
+        if (parentState != null)
+            parentIndex = this.stateMap.indexOf(parentState);
+        
+        if(parentIndex == -1)
+            return false;
+
+        if(after){
+            parentIndex = parentIndex + 1;
+            const section = this.sectionMap.get(parentState);
+            if (section != undefined) {
+                this.sectionMap.delete(parentState);
+                section.parentState = state;
+                this.sectionMap.set(state, section);
             }
         }
-        return false;
+
+        this.stateMap.splice(parentIndex, 0, state);
+        
+        return true;
     }
 
-    deleteState() { return false; } // TODO
+    deleteState(state, replacementState=null) { 
+        const stateIndex = this.stateMap.indexOf(state);
+        const replacementStateIndex = this.stateMap.indexOf(replacementState); 
 
-    insertSection() { return false; } // TODO
-    deleteSection() { return false; } // TODO
+        if (stateIndex == -1 || (replacementStateIndex == -1 && this.stateCount > 1))
+            return false;
+
+        if (this.stateCount == 1 && stateIndex == 0) {
+            this.stateMap.pop()
+            return true;
+        }
+
+        state.callers.forEach((count, caller) => {
+            for(let i = 0; i < caller.returnStateRefs.length; i++){
+                if(caller.returnStateRefs[i] == state) {
+                    caller.setReturnState(i, replacementState);
+                }
+            }
+        });
+
+        this.stateMap.splice(stateIndex, 1);
+        return true; 
+    }
+
+    insertSection(afterState, sectionLines) {
+        if(afterState == null || sectionLines == null)
+            return false; 
+        
+        if(this.sectionMap.get(afterState) != null)
+            return false;
+
+        if(this.stateMap.indexOf(afterState) == -1)
+            return false;
+        
+        const section = new Section(afterState, sectionLines);
+        this.sectionMap.set(afterState, section);
+        return true;
+    }
+
+    deleteSection(section) {
+        return this.sectionMap.delete(section.parentState);
+    }
 
     duplicateState() { return false; } // TODO
     duplicateRange() { return false; } // TODO
