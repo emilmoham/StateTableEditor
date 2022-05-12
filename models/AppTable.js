@@ -145,10 +145,18 @@ class AppTable {
         if(parentIndex == -1)
             return false;
 
-        if(after)
+        if(after){
             parentIndex = parentIndex + 1;
+            const section = this.sectionMap.get(parentState);
+            if (section != undefined) {
+                this.sectionMap.delete(parentState);
+                section.parentState = state;
+                this.sectionMap.set(state, section);
+            }
+        }
+
+        this.stateMap.splice(parentIndex, 0, state);
         
-        this.stateMap.splice(parentIndex, 0, state)
         return true;
     }
 

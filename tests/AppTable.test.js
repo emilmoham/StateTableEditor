@@ -268,6 +268,20 @@ test('insert section invalid after state', () => {
     expect(rc).toBe(false);
 });
 
+test('insert section at state already before another section', () => {
+    const sectionLines = ["test"];
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+    const lastState = table.stateMap[0];
+
+    rc = table.insertSection(lastState, sectionLines);
+    expect(rc).toBe(true);
+    
+    rc = table.insertSection(lastState, sectionLines);
+    expect(rc).toBe(false);
+});
+
 test('delete valid section', () => {
     const table = new AppTable();
     let rc = table.insertState(null, false, "state0", "state 0");
@@ -294,4 +308,21 @@ test('delete invalid section', () => {
     expect(rc).toBe(true);
     rc = table.deleteSection(section);
     expect(rc).toBe(false);
+});
+
+test('insert state after a state before section', () => {
+    const table = new AppTable();
+    
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+
+    const parentState = table.stateMap[0];
+    rc = table.insertSection(parentState, ["test"]);
+    expect(rc).toBe(true);
+    const section = table.sectionMap.get(parentState);
+    expect(section.parentState).toBe(parentState);
+    
+    rc = table.insertState(parentState, true, "state1", "state 1");
+    const childState = table.stateMap[1];
+    expect(section.parentState).toBe(childState);
 });
