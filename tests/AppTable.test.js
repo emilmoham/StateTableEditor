@@ -236,3 +236,62 @@ test('delete state point to valid state', () => {
     expect(state0.returnStateRefs[2].name).toBe("state0");
     expect(state2.returnStateRefs[2].name).toBe("state0");
 });
+
+test('insert section single line', () => {
+    const sectionLines = ["test"];
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+    const lastState = table.stateMap[0];
+
+    rc = table.insertSection(lastState, sectionLines);
+    expect(rc).toBe(true);
+    expect(table.sectionMap.get(lastState).descriptionLines).toBe(sectionLines);
+});
+
+test('insert section multiple lines', () => {
+    const sectionLines = ["test", "other test"];
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+    const lastState = table.stateMap[0];
+
+    rc = table.insertSection(lastState, sectionLines);
+    expect(rc).toBe(true);
+    expect(table.sectionMap.get(lastState).descriptionLines).toBe(sectionLines);
+});
+
+test('insert section invalid after state', () => {
+    const sectionLines = ["test"];
+    const table = new AppTable();
+    let rc = table.insertSection(table, sectionLines);
+    expect(rc).toBe(false);
+});
+
+test('delete valid section', () => {
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+
+    const lastState = table.stateMap[0];
+    rc = table.insertSection(lastState, ["test"]);
+    expect(rc).toBe(true);
+    const section = table.sectionMap.get(lastState);
+    rc = table.deleteSection(section);
+    expect(rc).toBe(true);
+});
+
+test('delete invalid section', () => {
+    const table = new AppTable();
+    let rc = table.insertState(null, false, "state0", "state 0");
+    expect(rc).toBe(true);
+
+    const lastState = table.stateMap[0];
+    rc = table.insertSection(lastState, ["test"]);
+    expect(rc).toBe(true);
+    const section = table.sectionMap.get(lastState);
+    rc = table.deleteSection(section);
+    expect(rc).toBe(true);
+    rc = table.deleteSection(section);
+    expect(rc).toBe(false);
+});

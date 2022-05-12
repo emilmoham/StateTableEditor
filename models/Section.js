@@ -1,5 +1,6 @@
 class Section {
-    constructor (descriptionLines = []){
+    constructor (parentState, descriptionLines = []){
+        this.parentState = parentState;
         this.descriptionLines = descriptionLines;
     }
 

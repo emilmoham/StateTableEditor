@@ -63,7 +63,7 @@ class AppTable {
 
         let section = this.sectionMap.get(lastState);
         if (section == undefined) {
-            section = new Section();
+            section = new Section(lastState);
             this.sectionMap.set(lastState, section);
         }
         section.parseDescriptionLine(line);
@@ -176,8 +176,24 @@ class AppTable {
         return true; 
     }
 
-    insertSection() { return false; } // TODO
-    deleteSection() { return false; } // TODO
+    insertSection(afterState, sectionLines) {
+        if(afterState == null || sectionLines == null)
+            return false; 
+        
+        if(this.sectionMap.get(afterState) != null)
+            return false;
+
+        if(this.stateMap.indexOf(afterState) == -1)
+            return false;
+        
+        const section = new Section(afterState, sectionLines);
+        this.sectionMap.set(afterState, section);
+        return true;
+    }
+
+    deleteSection(section) {
+        return this.sectionMap.delete(section.parentState);
+    }
 
     duplicateState() { return false; } // TODO
     duplicateRange() { return false; } // TODO
