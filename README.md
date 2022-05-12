@@ -64,7 +64,8 @@ Section headers always have the format:
 Sections Headers are always bounded by a line of `'*'` characters. 
 "\<Description\>" is a variable length string which may span multiple lines. 
 Each line of the description text must start with a `'*'` character followed
-by two spaces. These lines are ignored by the code which reads the configuration
+by two spaces and may not be longer than 179 characters including the leading
+characters. These lines are ignored by the code which reads the configuration
 of the state machine.
 
 While State Definitions always have the following format:
