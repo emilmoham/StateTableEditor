@@ -1,6 +1,4 @@
 const fs = require('fs');
-const { start } = require('repl');
-const internal = require('stream');
 const Section = require('./Section.js');
 const SwitchState = require('./SwitchState.js');
 
