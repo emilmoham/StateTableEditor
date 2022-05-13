@@ -392,3 +392,127 @@ test('duplicate self referencing state', () => {
     expect(state2.returnStateRefs[2]).toBe(state2);
     expect(state1.returnStateRefs[1]).toBe(state1);
 });
+
+test('duplicate range before new parent', () => {
+    const table = new AppTable();
+
+    const state0 = new SwitchState("state0", [], [], "state0");
+    const state1 = new SwitchState("state1", [], [], "state1");
+    const state2 = new SwitchState("state2", [], [], "state2");
+    const state3 = new SwitchState("state3", [], [], "state3");
+
+    table.insertState(null, false, state0);
+    table.insertState(state0, true, state1);
+    table.insertState(state1, true, state2);
+    table.insertState(state2, true, state3);
+
+    expect(table.stateCount).toBe(4);
+    let rc = table.duplicateRange(state1, state3, state3, false);
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(7);
+    expect(table.stateMap[3]).not.toBe(state3);
+    expect(table.stateMap[6]).toBe(state3);
+});
+
+test('duplicate range after new parent', () => {
+    const table = new AppTable();
+
+    const state0 = new SwitchState("state0", [], [], "state0");
+    const state1 = new SwitchState("state1", [], [], "state1");
+    const state2 = new SwitchState("state2", [], [], "state2");
+    const state3 = new SwitchState("state3", [], [], "state3");
+
+    table.insertState(null, false, state0);
+    table.insertState(state0, true, state1);
+    table.insertState(state1, true, state2);
+    table.insertState(state2, true, state3);
+
+    expect(table.stateCount).toBe(4);
+    let rc = table.duplicateRange(state1, state3, state3, true);
+    expect(rc).toBe(true);
+    expect(table.stateCount).toBe(7);
+    expect(table.stateMap[3]).toBe(state3);
+    expect(table.stateMap[6]).not.toBe(state3);
+});
+
+test('duplicate range invalid start state', () => {
+    const table = new AppTable();
+    
+    const state0 = new SwitchState("state0", [], [], "state0");
+    const state1 = new SwitchState("state1", [], [], "state1");
+    const state2 = new SwitchState("state2", [], [], "state2");
+    const state3 = new SwitchState("state3", [], [], "state3");
+
+    table.insertState(null, false, state0);
+    table.insertState(state0, true, state1);
+    table.insertState(state1, true, state2);
+    table.insertState(state2, true, state3);
+
+    expect(table.stateCount).toBe(4);
+    let rc = table.duplicateRange(table, state3, state3, true);
+    expect(rc).toBe(false);
+    expect(table.stateCount).toBe(4);
+});
+
+test('duplicate range invalid end state', () => {
+    const table = new AppTable();
+    
+    const state0 = new SwitchState("state0", [], [], "state0");
+    const state1 = new SwitchState("state1", [], [], "state1");
+    const state2 = new SwitchState("state2", [], [], "state2");
+    const state3 = new SwitchState("state3", [], [], "state3");
+
+    table.insertState(null, false, state0);
+    table.insertState(state0, true, state1);
+    table.insertState(state1, true, state2);
+    table.insertState(state2, true, state3);
+
+    expect(table.stateCount).toBe(4);
+    const startRangeState = table.stateMap[1];
+    const endRangeState = table.stateMap[3];
+    let rc = table.duplicateRange(state1, table, state3, true);
+    expect(rc).toBe(false);
+    expect(table.stateCount).toBe(4);
+});
+
+// test('duplicate range internal references', () => {
+//     const table = new AppTable();
+
+//     const state0 = new SwitchState("state0", [], [], "state0");// 0 1 1
+//     const state1 = new SwitchState("state1", [], [], "state1");// 0 2 2 
+//     const state2 = new SwitchState("state2", [], [], "state2");// 0 1 3
+//     const state3 = new SwitchState("state3", [], [], "state3");// 0 1 1
+
+//     table.insertState(null, false, state0);
+//     table.insertState(state0, true, state1);
+//     table.insertState(state1, true, state2);
+//     table.insertState(state2, true, state3);
+
+//     state0.setReturnState(0, state0);
+//     state0.setReturnState(1, state1);
+//     state0.setReturnState(2, state1);
+//     state1.setReturnState(0, state0);
+//     state1.setReturnState(1, state2);
+//     state1.setReturnState(2, state2);
+//     state2.setReturnState(0, state0);
+//     state2.setReturnState(1, state1);
+//     state2.setReturnState(2, state3);
+//     state3.setReturnState(0, state0);
+//     state3.setReturnState(1, state1);
+//     state3.setReturnState(2, state1);
+
+//     expect(table.stateCount).toBe(4);
+//     let rc = table.duplicateRange(state1, state3, state3, false);
+//     expect(rc).toBe(true);
+//     expect(table.stateCount).toBe(7);
+
+//     const state4 = table.stateMap[3]; // 0 5 5
+//     const state5 = table.stateMap[4]; // 0 4 6
+//     const state6 = table.stateMap[5]; // 0 4 4
+
+//     expect(table.stateMap[7]).toBe(state3);
+//     expect(table.stateMap[4]).toBe(state5);
+//     expect(state5.returnStateRefs[0]).toBe(state0);
+//     expect(state5.returnStateRefs[1]).toBe(state4);
+//     expect(state5.returnStateRefs[2]).toBe(state6);
+// });

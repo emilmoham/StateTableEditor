@@ -1,4 +1,6 @@
 const fs = require('fs');
+const { start } = require('repl');
+const internal = require('stream');
 const Section = require('./Section.js');
 const SwitchState = require('./SwitchState.js');
 
@@ -205,7 +207,7 @@ class AppTable {
         if (this.stateMap.indexOf(originalState) == -1 || this.stateMap.indexOf(targetParentState) == -1)
             return false;
         
-        // Create a deep copy of the original state
+        // Create a copy of the original state
         const copyState = new SwitchState(
             originalState.name,
             [],
@@ -226,7 +228,43 @@ class AppTable {
         return this.insertState(targetParentState, after, copyState);
     }
 
-    duplicateRange() { return false; } // TODO
+    duplicateRange(startState, endState, parent, after) {
+        const startIndex = this.stateMap.indexOf(startState);
+        const endIndex = this.stateMap.indexOf(endState);
+        const parentIndex = this.stateMap.indexOf(parent);
+        
+        if (startIndex == -1 || endIndex == -1 || parentIndex == -1 || endIndex - startIndex < 0)
+            return false;
+        
+        const originalStates = [];
+        const copyStates = [];
+        for (let i = startIndex; i <= endIndex; i++) {
+            const currentState = this.stateMap[i]
+            originalStates.push(currentState);
+            copyStates.push(new SwitchState(currentState.name, [], [], currentState.description));
+        }
+
+        for(let i = 0; i < originalStates.length; i++) {
+            const original = originalStates[i];
+            const copy = copyStates[i];
+            for(let j = 0; j < original.returnStateRefs; j++) {
+                const returnStateRef = original.returnStateRefs[j];
+                const internalIndex = originalStates.indexOf(returnStateRef);
+                if(internalIndex != -1)
+                    copy.setReturnState(j, copyStates[internalIndex]);
+                else
+                    copy.setReturnState(j, returnStateRef);
+            }
+        }
+
+        for(let i = 0; i < copyStates.length; i++){
+            const rc = this.insertState(parent, after, copyStates[i]);
+            if(!rc)
+                return false;
+        }
+
+        return true; 
+    }
 }
 
 module.exports = AppTable;
