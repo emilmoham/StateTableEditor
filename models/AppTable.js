@@ -132,9 +132,7 @@ class AppTable {
         });
     }
     
-    insertState(parentState = null, after = true, name = "myNewState", description = "myNewStateDescription") { 
-        const state = new SwitchState(name, [], [], description);
-        
+    insertState(parentState = null, after = true, state = new SwitchState("myNewState", [],[],"myNewState")) {
         if(this.stateCount > 0 && parentState == null)
             return false; 
         
@@ -203,7 +201,31 @@ class AppTable {
         return this.sectionMap.delete(section.parentState);
     }
 
-    duplicateState() { return false; } // TODO
+    duplicateState(originalState, targetParentState, after) {
+        if (this.stateMap.indexOf(originalState) == -1 || this.stateMap.indexOf(targetParentState) == -1)
+            return false;
+        
+        // Create a deep copy of the original state
+        const copyState = new SwitchState(
+            originalState.name,
+            [],
+            [],
+            originalState.description);
+        
+        // Replace any return references to the original state with the new state
+        for(let i = 0; i < originalState.returnStateRefs.length; i++) {
+            const returnStateRef = originalState.returnStateRefs[i];
+            if (returnStateRef == originalState) {
+                copyState.setReturnState(i, copyState);
+            } else {
+                copyState.setReturnState(i, returnStateRef);
+            }
+        }
+
+        // Place the new state in the map at target Index
+        return this.insertState(targetParentState, after, copyState);
+    }
+
     duplicateRange() { return false; } // TODO
 }
 
