@@ -1,4 +1,4 @@
-const Section = require('../models/Section.js');
+const Section = require('../src/models/Section.js');
 
 test('parse description line single word', () => {
     const input = "*  stuff";

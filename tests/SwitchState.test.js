@@ -1,4 +1,4 @@
-const SwitchState = require("../models/SwitchState");
+const SwitchState = require("../src/models/SwitchState");
 
 test('parse state single digit id ', () => {
     const state = SwitchState.parseState("#$State ;GetAppTrunk; 0 3 3 3 3 3 ;[2] Get Trunk Port");
