@@ -1,5 +1,5 @@
-const AppTable = require('../src/models/AppTable.js');
-const SwitchState = require('../src/models/SwitchState.js');
+const AppTable = require('./AppTable.js');
+const SwitchState = require('./SwitchState.js');
 
 test('parse good header', () => {
     const table = new AppTable("");
