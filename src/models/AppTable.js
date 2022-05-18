@@ -245,7 +245,7 @@ class AppTable {
         for(let i = 0; i < originalStates.length; i++) {
             const original = originalStates[i];
             const copy = copyStates[i];
-            for(let j = 0; j < original.returnStateRefs; j++) {
+            for(let j = 0; j < original.returnStateRefs.length; j++) {
                 const returnStateRef = original.returnStateRefs[j];
                 const internalIndex = originalStates.indexOf(returnStateRef);
                 if(internalIndex != -1)
