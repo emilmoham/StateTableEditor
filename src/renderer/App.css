@@ -7,7 +7,7 @@ body {
   color: white;
   height: 100vh;
   background: linear-gradient(
-    200.96deg,
+    20.96deg,
     #fedc2a -29.09%,
     #dd5789 51.77%,
     #7a2c9e 129.35%
@@ -38,25 +38,17 @@ button:hover {
   opacity: 1;
 }
 
-li {
-  list-style: none;
-}
-
-a {
-  text-decoration: none;
-  height: fit-content;
-  width: fit-content;
-  margin: 10px;
-}
-
-a:hover {
-  opacity: 1;
-  text-decoration: none;
-}
-
-.Hello {
+.StarterOptions {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 20px 0;
+}
+
+.StarterOptions button {
+  margin: 0px 10px 0px 10px;
+}
+
+.StarterInstructions {
+  text-align: center;
 }
