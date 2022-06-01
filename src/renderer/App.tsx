@@ -1,15 +1,26 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
+import { MemoryRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import './App.scss';
+import Nav from './Components/NavigationBar';
 
-const MainMenu = () => {
+function Home() {
+  function onNew() {
+    console.log('TODO: New');
+  }
+
+  function onLoad() {
+    console.log('TODO: Load');
+  }
+
   return (
     <div>
       <div className="MainMenu">
         <div className="StarterOptions">
-          <a href="/TableView">
-            <button type="button">New</button>
-          </a>
-          <button type="button">Load</button>
+          <button type="button" onClick={() => onNew()}>
+            New
+          </button>
+          <button type="button" onClick={() => onLoad()}>
+            Load
+          </button>
         </div>
         <div>
           <h3 className="StarterInstructions">
@@ -20,14 +31,27 @@ const MainMenu = () => {
       </div>
     </div>
   );
-};
+}
+
+function TableView() {
+  return <h2>TableView</h2>;
+}
+
+function MapView() {
+  return <h2>MapView</h2>;
+}
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainMenu />} />
-      </Routes>
-    </Router>
+    <div>
+      <Router>
+        <Nav name="Get Started" />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/MapView" element={<MapView />} />
+          <Route path="/TableView" element={<TableView />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
