@@ -1,14 +1,21 @@
+import { useEffect } from 'react';
 import { MemoryRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.scss';
 import Nav from './Components/NavigationBar';
 
 function Home() {
+  useEffect(() => {
+    window.electron.ipcRenderer.on('file-io-response', (arg: any) => {
+      console.log('todo');
+    });
+  }, []);
+
   function onNew() {
-    console.log('TODO: New');
+    window.electron.ipcRenderer.sendMessage('file-io', ['new']);
   }
 
   function onLoad() {
-    console.log('TODO: Load');
+    window.electron.ipcRenderer.sendMessage('file-io', ['load']);
   }
 
   return (
