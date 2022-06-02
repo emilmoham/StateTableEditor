@@ -150,7 +150,11 @@ async function loadFile() {
       return false;
     }
 
-    mainWindow?.webContents.send('file-io-response', ['load', data]);
+    mainWindow?.webContents.send('file-io-response', [
+      'load',
+      filePaths[0],
+      data,
+    ]);
     return true;
   });
 }

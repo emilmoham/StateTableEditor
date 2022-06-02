@@ -94,9 +94,8 @@ export default class AppTable {
     return READ_SECTION;
   }
 
-  read() {
-    const appFile = fs.readFileSync(this.filename, 'utf-8');
-    const lines = appFile.split(/\r?\n/);
+  read(rawData: string) {
+    const lines = rawData.split(/\r?\n/);
 
     let parseState = READ_HEADER;
 
