@@ -1,8 +1,6 @@
 import Section from './Section';
 import SwitchState from './SwitchState';
 
-const fs = require('fs');
-
 const READ_ERROR = -1;
 const READ_HEADER = 0;
 const READ_NEXT = 1;
