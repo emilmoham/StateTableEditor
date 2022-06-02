@@ -1,4 +1,4 @@
-const Section = require('../Section');
+import Section from '../Section';
 
 test('parse description line single word', () => {
   const input = '*  stuff';

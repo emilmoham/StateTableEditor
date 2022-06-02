@@ -1,5 +1,5 @@
-const AppTable = require('../AppTable');
-const SwitchState = require('../SwitchState');
+import AppTable from '../AppTable';
+import SwitchState from '../SwitchState';
 
 test('parse good header', () => {
   expect(AppTable.parseHeader('#$HEADER; NULL')).toBe(AppTable.READ_NEXT);
@@ -115,8 +115,11 @@ test('insert state before invalid state', () => {
   const table = new AppTable();
   let rc = table.insertState();
   expect(rc).toBe(true);
+
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+
   rc = table.insertState(
-    table,
+    invalidState,
     false,
     new SwitchState('state2', [], [], 'state 2')
   );
@@ -128,17 +131,20 @@ test('insert state after invalid state', () => {
   let rc = table.insertState();
   expect(rc).toBe(true);
 
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+
   rc = table.insertState(
-    table,
+    invalidState,
     true,
     new SwitchState('state2', [], [], 'state 2')
   );
   expect(rc).toBe(false);
 });
 
-test('delete invlaid state', () => {
+test('delete invalid state', () => {
   const table = new AppTable();
-  const rc = table.deleteSection(table);
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+  const rc = table.deleteState(invalidState);
   expect(rc).toBe(false);
 });
 
@@ -182,7 +188,8 @@ test('delete state single state exists point to invalid state', () => {
   expect(table.stateCount).toBe(1);
 
   const state = table.stateMap[0];
-  rc = table.deleteState(state, table);
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+  rc = table.deleteState(state, invalidState);
   expect(rc).toBe(true);
   expect(table.stateCount).toBe(0);
 });
@@ -199,7 +206,9 @@ test('delete state multiple states exist point to invalid state', () => {
   expect(rc).toBe(true);
   expect(table.stateCount).toBe(2);
 
-  rc = table.deleteState(parentState, table);
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+
+  rc = table.deleteState(parentState, invalidState);
   expect(rc).toBe(false);
 
   expect(table.stateCount).toBe(2);
@@ -269,7 +278,7 @@ test('insert section single line', () => {
 
   rc = table.insertSection(lastState, sectionLines);
   expect(rc).toBe(true);
-  expect(table.sectionMap.get(lastState).descriptionLines).toBe(sectionLines);
+  expect(table.sectionMap.get(lastState)?.descriptionLines).toBe(sectionLines);
 });
 
 test('insert section multiple lines', () => {
@@ -285,13 +294,16 @@ test('insert section multiple lines', () => {
 
   rc = table.insertSection(lastState, sectionLines);
   expect(rc).toBe(true);
-  expect(table.sectionMap.get(lastState).descriptionLines).toBe(sectionLines);
+  expect(table.sectionMap.get(lastState)?.descriptionLines).toBe(sectionLines);
 });
 
 test('insert section invalid after state', () => {
   const sectionLines = ['test'];
   const table = new AppTable();
-  const rc = table.insertSection(table, sectionLines);
+
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+
+  const rc = table.insertSection(invalidState, sectionLines);
   expect(rc).toBe(false);
 });
 
@@ -326,7 +338,7 @@ test('delete valid section', () => {
   rc = table.insertSection(lastState, ['test']);
   expect(rc).toBe(true);
   const section = table.sectionMap.get(lastState);
-  rc = table.deleteSection(section);
+  if (section != null) rc = table.deleteSection(section);
   expect(rc).toBe(true);
 });
 
@@ -343,9 +355,9 @@ test('delete invalid section', () => {
   rc = table.insertSection(lastState, ['test']);
   expect(rc).toBe(true);
   const section = table.sectionMap.get(lastState);
-  rc = table.deleteSection(section);
+  if (section != null) rc = table.deleteSection(section);
   expect(rc).toBe(true);
-  rc = table.deleteSection(section);
+  if (section != null) rc = table.deleteSection(section);
   expect(rc).toBe(false);
 });
 
@@ -363,7 +375,7 @@ test('insert state after a state before section', () => {
   rc = table.insertSection(parentState, ['test']);
   expect(rc).toBe(true);
   const section = table.sectionMap.get(parentState);
-  expect(section.parentState).toBe(parentState);
+  expect(section?.parentState).toBe(parentState);
 
   rc = table.insertState(
     parentState,
@@ -371,7 +383,7 @@ test('insert state after a state before section', () => {
     new SwitchState('state1', [], [], 'state 1')
   );
   const childState = table.stateMap[1];
-  expect(section.parentState).toBe(childState);
+  expect(section?.parentState).toBe(childState);
 });
 
 test('duplicate valid state before', () => {
@@ -400,7 +412,10 @@ test('duplicate state invalid original state', () => {
   const table = new AppTable();
   const originalState = new SwitchState('state0', [], [], 'state 0');
   table.insertState(null, false, originalState);
-  const rc = table.duplicateState(table, originalState, true);
+
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+
+  const rc = table.duplicateState(invalidState, originalState, true);
   expect(rc).toBe(false);
 });
 
@@ -408,7 +423,10 @@ test('duplicate state invalid target parent', () => {
   const table = new AppTable();
   const originalState = new SwitchState('state0', [], [], 'state 0');
   table.insertState(null, false, originalState);
-  const rc = table.duplicateState(originalState, table, true);
+
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+
+  const rc = table.duplicateState(originalState, invalidState, true);
   expect(rc).toBe(false);
 });
 
@@ -494,7 +512,10 @@ test('duplicate range invalid start state', () => {
   table.insertState(state2, true, state3);
 
   expect(table.stateCount).toBe(4);
-  const rc = table.duplicateRange(table, state3, state3, true);
+
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+
+  const rc = table.duplicateRange(invalidState, state3, state3, true);
   expect(rc).toBe(false);
   expect(table.stateCount).toBe(4);
 });
@@ -513,7 +534,10 @@ test('duplicate range invalid end state', () => {
   table.insertState(state2, true, state3);
 
   expect(table.stateCount).toBe(4);
-  const rc = table.duplicateRange(state1, table, state3, true);
+
+  const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
+
+  const rc = table.duplicateRange(state1, invalidState, state3, true);
   expect(rc).toBe(false);
   expect(table.stateCount).toBe(4);
 });

@@ -1,6 +1,7 @@
+import Section from './Section';
+import SwitchState from './SwitchState';
+
 const fs = require('fs');
-const Section = require('./Section');
-const SwitchState = require('./SwitchState');
 
 const READ_ERROR = -1;
 const READ_HEADER = 0;
@@ -8,42 +9,48 @@ const READ_NEXT = 1;
 const READ_STATE = 2;
 const READ_SECTION = 3;
 
-class AppTable {
+export default class AppTable {
+  filename: string;
+
+  stateMap: SwitchState[];
+
+  sectionMap: Map<SwitchState, Section>;
+
   constructor(filename = 'sample.app') {
     this.filename = filename;
     this.stateMap = [];
     this.sectionMap = new Map();
   }
 
-  static get READ_ERROR() {
+  static get READ_ERROR(): number {
     return READ_ERROR;
   }
 
-  static get READ_HEADER() {
+  static get READ_HEADER(): number {
     return READ_HEADER;
   }
 
-  static get READ_NEXT() {
+  static get READ_NEXT(): number {
     return READ_NEXT;
   }
 
-  static get READ_STATE() {
+  static get READ_STATE(): number {
     return READ_STATE;
   }
 
-  static get READ_SECTION() {
+  static get READ_SECTION(): number {
     return READ_SECTION;
   }
 
-  get stateCount() {
+  get stateCount(): number {
     return this.stateMap.length;
   }
 
-  static parseHeader(line) {
+  static parseHeader(line: string) {
     return line === '#$HEADER; NULL' ? READ_NEXT : READ_ERROR;
   }
 
-  static parseNextLine(line) {
+  static parseNextLine(line: string) {
     if (line.length === 0) {
       return READ_NEXT;
     }
@@ -59,14 +66,14 @@ class AppTable {
     return READ_ERROR;
   }
 
-  parseStateLine(line) {
+  parseStateLine(line: string) {
     const data = SwitchState.parseState(line);
     if (!data) return READ_ERROR;
     this.stateMap.push(data);
     return READ_NEXT;
   }
 
-  parseSection(line) {
+  parseSection(line: string) {
     if (line.length === 0) return READ_SECTION;
 
     if (line.length > 0 && !line.match(/\*{1,}(\s{2,})?/)) return READ_ERROR;
@@ -93,16 +100,19 @@ class AppTable {
 
     let parseState = READ_HEADER;
 
-    // eslint-disable-next-line consistent-return
-    lines.forEach((line) => {
+    for (let i = 0; i < lines.length; i += 1) {
+      if (parseState === READ_ERROR) return false;
+
+      const line = lines[i];
+
       switch (parseState) {
         case READ_ERROR:
-          return false;
+          break;
         case READ_HEADER:
-          parseState = this.parseHeader(line);
+          parseState = AppTable.parseHeader(line);
           break;
         case READ_NEXT:
-          parseState = this.parseNextLine(line);
+          parseState = AppTable.parseNextLine(line);
           break;
         case READ_STATE:
           parseState = this.parseStateLine(line);
@@ -113,19 +123,19 @@ class AppTable {
         default:
           break;
       }
-    });
+    }
 
     this.resolveAllStateReferences();
 
     return true;
   }
 
-  print() {
+  print(): void {
     let outBytes = '';
     for (let i = 0; i < this.stateCount; i += 1) {
       const state = this.stateMap[i];
 
-      outBytes = outBytes.concat(i);
+      outBytes = outBytes.concat(i.toString());
       outBytes = outBytes.concat('\n');
       outBytes = outBytes.concat(state.format(i));
       outBytes = outBytes.concat('\n');
@@ -137,27 +147,32 @@ class AppTable {
     }
   }
 
-  resolveAllStateReturnIds() {
+  resolveAllStateReturnIds(): void {
     this.stateMap.forEach((element) => {
       element.resolveReturnStateIds(this.stateMap);
     });
   }
 
-  resolveAllStateReferences() {
+  resolveAllStateReferences(): void {
     this.stateMap.forEach((element) => {
       element.resolveReturnStateReferences(this.stateMap);
     });
   }
 
   insertState(
-    parentState = null,
+    parentState: SwitchState | null = null,
     after = true,
-    state = new SwitchState('myNewState', [], [], 'myNewState')
-  ) {
-    if (this.stateCount > 0 && parentState == null) return false;
+    state: SwitchState = new SwitchState('myNewState', [], [], 'myNewState')
+  ): boolean {
+    if (this.stateCount === 0) {
+      this.stateMap.splice(0, 0, state);
+      return true;
+    }
 
+    if (parentState == null) return false;
     let parentIndex = 0;
-    if (parentState != null) parentIndex = this.stateMap.indexOf(parentState);
+
+    parentIndex = this.stateMap.indexOf(parentState);
 
     if (parentIndex === -1) return false;
 
@@ -176,9 +191,10 @@ class AppTable {
     return true;
   }
 
-  deleteState(state, replacementState = null) {
+  deleteState(state: SwitchState, replacementState: SwitchState | null = null) {
     const stateIndex = this.stateMap.indexOf(state);
-    const replacementStateIndex = this.stateMap.indexOf(replacementState);
+    const replacementStateIndex =
+      replacementState == null ? -1 : this.stateMap.indexOf(replacementState);
 
     if (
       stateIndex === -1 ||
@@ -191,7 +207,9 @@ class AppTable {
       return true;
     }
 
-    state.callers.forEach((count, caller) => {
+    if (replacementState == null) return false;
+
+    state.callers.forEach((_count, caller) => {
       for (let i = 0; i < caller.returnStateRefs.length; i += 1) {
         if (caller.returnStateRefs[i] === state) {
           caller.setReturnState(i, replacementState);
@@ -203,7 +221,7 @@ class AppTable {
     return true;
   }
 
-  insertSection(afterState, sectionLines) {
+  insertSection(afterState: SwitchState, sectionLines: string[]) {
     if (afterState == null || sectionLines == null) return false;
 
     if (this.sectionMap.get(afterState) != null) return false;
@@ -215,11 +233,15 @@ class AppTable {
     return true;
   }
 
-  deleteSection(section) {
+  deleteSection(section: Section) {
     return this.sectionMap.delete(section.parentState);
   }
 
-  duplicateState(originalState, targetParentState, after) {
+  duplicateState(
+    originalState: SwitchState,
+    targetParentState: SwitchState,
+    after: boolean
+  ) {
     if (
       this.stateMap.indexOf(originalState) === -1 ||
       this.stateMap.indexOf(targetParentState) === -1
@@ -248,7 +270,12 @@ class AppTable {
     return this.insertState(targetParentState, after, copyState);
   }
 
-  duplicateRange(startState, endState, parent, after) {
+  duplicateRange(
+    startState: SwitchState,
+    endState: SwitchState,
+    parent: SwitchState,
+    after: boolean
+  ) {
     const startIndex = this.stateMap.indexOf(startState);
     const endIndex = this.stateMap.indexOf(endState);
     const parentIndex = this.stateMap.indexOf(parent);
@@ -291,5 +318,3 @@ class AppTable {
     return true;
   }
 }
-
-module.exports = AppTable;

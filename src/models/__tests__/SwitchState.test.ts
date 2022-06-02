@@ -4,9 +4,9 @@ test('parse state single digit id', () => {
   const state = SwitchState.parseState(
     '#$State ;GetAppTrunk; 0 3 3 3 3 3 ;[2] Get Trunk Port'
   );
-  expect(state.name).toBe('GetAppTrunk');
-  expect(state.returnStateIds).toStrictEqual([0, 3, 3, 3, 3, 3]);
-  expect(state.description).toBe('Get Trunk Port');
+  expect(state?.name).toBe('GetAppTrunk');
+  expect(state?.returnStateIds).toStrictEqual([0, 3, 3, 3, 3, 3]);
+  expect(state?.description).toBe('Get Trunk Port');
 });
 
 test('parse state double digit id', () => {
@@ -14,8 +14,8 @@ test('parse state double digit id', () => {
     '#$State ;RejectCall; 0 87 87 ;[13] Reject Unknown Inbound Call <6>'
   );
   expect(state?.name).toBe('RejectCall');
-  expect(state.returnStateIds).toStrictEqual([0, 87, 87]);
-  expect(state.description).toBe('Reject Unknown Inbound Call <6>');
+  expect(state?.returnStateIds).toStrictEqual([0, 87, 87]);
+  expect(state?.description).toBe('Reject Unknown Inbound Call <6>');
 });
 
 test('malformed state', () => {
@@ -30,7 +30,7 @@ test('format', () => {
   const input =
     '#$State ;RejectCall; 0 87 87 ;[13] Reject Unknown Inbound Call <6>';
   const state = SwitchState.parseState(input);
-  const output = state.format(id);
+  const output = state?.format(id);
   expect(output).toBe(input);
 });
 
