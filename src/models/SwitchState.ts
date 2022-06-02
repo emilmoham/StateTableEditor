@@ -1,8 +1,23 @@
 const MAX_STATES = 20;
 const MIN_STATES = 2;
 
-class SwitchState {
-  constructor(name, returnStateIds, returnStateRefs, description) {
+export default class SwitchState {
+  name: string;
+
+  returnStateIds: number[];
+
+  returnStateRefs: SwitchState[];
+
+  callers: Map<SwitchState, number>;
+
+  description: string;
+
+  constructor(
+    name: string,
+    returnStateIds: number[],
+    returnStateRefs: SwitchState[],
+    description: string
+  ) {
     this.name = name;
     this.returnStateIds = returnStateIds;
     this.returnStateRefs = returnStateRefs;
@@ -10,15 +25,15 @@ class SwitchState {
     this.description = description;
   }
 
-  static get MAX_STATES() {
+  static get MAX_STATES(): number {
     return MAX_STATES;
   }
 
-  static get MIN_STATES() {
+  static get MIN_STATES(): number {
     return MIN_STATES;
   }
 
-  resolveReturnStateIds(map) {
+  resolveReturnStateIds(map: SwitchState[]): number {
     this.returnStateIds = [];
     for (let i = 0; i < this.returnStateRefs.length; i += 1) {
       const element = this.returnStateRefs[i];
@@ -29,7 +44,7 @@ class SwitchState {
     return -1;
   }
 
-  resolveReturnStateReferences(map) {
+  resolveReturnStateReferences(map: SwitchState[]): number {
     this.returnStateRefs = [];
     for (let i = 0; i < this.returnStateIds.length; i += 1) {
       const element = this.returnStateIds[i];
@@ -39,7 +54,7 @@ class SwitchState {
     return -1;
   }
 
-  static parseState(text) {
+  static parseState(text: string): SwitchState | null {
     const data = text.match(
       /#\$State ;(\w{0,})[ ]?;([ \d]{0,});\[(\d+)\] (.{0,})/
     );
@@ -55,13 +70,13 @@ class SwitchState {
     return new SwitchState(stateName, returnStates, [], stateDesc);
   }
 
-  format(id) {
+  format(id: number): string {
     return `#$State ;${this.name}; ${this.returnStateIds.join(' ')} ;[${id}] ${
       this.description
     }`;
   }
 
-  setReturnState(index, state) {
+  setReturnState(index: number, state: SwitchState): boolean {
     if (index >= MAX_STATES) return false;
 
     if (index > this.returnStateRefs.length) return false;
@@ -80,7 +95,7 @@ class SwitchState {
     return true;
   }
 
-  addCaller(state) {
+  addCaller(state: SwitchState): void {
     let x = this.callers.get(state);
     if (x === undefined) {
       this.callers.set(state, 1);
@@ -90,7 +105,7 @@ class SwitchState {
     this.callers.set(state, x);
   }
 
-  removeCaller(state) {
+  removeCaller(state: SwitchState): void {
     let x = this.callers.get(state);
     if (x === undefined) return;
     if (x === 1) {
@@ -102,5 +117,3 @@ class SwitchState {
     this.callers.set(state, x);
   }
 }
-
-module.exports = SwitchState;

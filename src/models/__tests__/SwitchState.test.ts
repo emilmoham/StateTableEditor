@@ -1,4 +1,4 @@
-const SwitchState = require('../SwitchState');
+import SwitchState from '../SwitchState';
 
 test('parse state single digit id', () => {
   const state = SwitchState.parseState(
@@ -13,7 +13,7 @@ test('parse state double digit id', () => {
   const state = SwitchState.parseState(
     '#$State ;RejectCall; 0 87 87 ;[13] Reject Unknown Inbound Call <6>'
   );
-  expect(state.name).toBe('RejectCall');
+  expect(state?.name).toBe('RejectCall');
   expect(state.returnStateIds).toStrictEqual([0, 87, 87]);
   expect(state.description).toBe('Reject Unknown Inbound Call <6>');
 });
