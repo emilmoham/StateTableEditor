@@ -33,6 +33,10 @@ export default class SwitchState {
     return MIN_STATES;
   }
 
+  getStateId(map: SwitchState[]): number {
+    return map.indexOf(this);
+  }
+
   resolveReturnStateIds(map: SwitchState[]): number {
     this.returnStateIds = [];
     for (let i = 0; i < this.returnStateRefs.length; i += 1) {
