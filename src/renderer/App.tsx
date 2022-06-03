@@ -4,10 +4,6 @@ import TableView from './Views/TableView';
 import './App.scss';
 import AppTableContext from './AppFileContext';
 
-function MapView() {
-  return <h2>MapView</h2>;
-}
-
 export default function App() {
   return (
     <div>
@@ -15,7 +11,6 @@ export default function App() {
         <AppTableContext.Provider value={[]}>
           <Routes>
             <Route path="/" element={<Start />} />
-            <Route path="/MapView" element={<MapView />} />
             <Route path="/TableView" element={<TableView />} />
           </Routes>
         </AppTableContext.Provider>
