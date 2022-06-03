@@ -3,6 +3,8 @@ import AppTableContext from 'renderer/AppFileContext';
 import { useContext } from 'react';
 import { Container, Table } from 'react-bootstrap';
 import SwitchState from 'renderer/Models/SwitchState';
+import EditableCell from 'renderer/Components/EditableCell';
+import './TableView.css';
 
 export default function TableView() {
   const tables: AppTable[] = useContext(AppTableContext);
@@ -16,18 +18,18 @@ export default function TableView() {
         return (
           <tr key={stateId}>
             <td>{stateId}</td>
-            <td>{state.name}</td>
+            <EditableCell value={state.name} />
 
             {state.returnStateIds.map((id) => {
-              return <td>{id}</td>;
+              return <EditableCell value={id.toString()} />;
             })}
 
             {[
               ...Array(SwitchState.MAX_STATES - state.returnStateIds.length),
             ].map(() => {
-              return <td />;
+              return <EditableCell value="" />;
             })}
-            <td>{state.description}</td>
+            <EditableCell value={state.description} />
           </tr>
         );
       });
@@ -37,7 +39,7 @@ export default function TableView() {
 
   return (
     <Container fluid>
-      <Table>
+      <Table striped bordered hover>
         <thead>
           <tr>
             <th>StateID</th>
