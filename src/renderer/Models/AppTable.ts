@@ -12,12 +12,13 @@ export default class AppTable {
 
   stateMap: SwitchState[];
 
-  sectionMap: Map<SwitchState, Section>;
+  // sectionMap: Map<SwitchState, Section>;
+  renderables: (SwitchState | Section)[];
 
   constructor(filename = 'sample.app') {
     this.filename = filename;
     this.stateMap = [];
-    this.sectionMap = new Map();
+    this.renderables = [];
   }
 
   static get READ_ERROR(): number {
@@ -76,17 +77,24 @@ export default class AppTable {
 
     if (line.length > 0 && !line.match(/\*{1,}(\s{2,})?/)) return READ_ERROR;
 
-    const lastState = this.stateMap[this.stateMap.length - 1];
-
     if (line.match(/\*{3,}/)) {
       return READ_NEXT;
     }
 
-    let section = this.sectionMap.get(lastState);
-    if (section === undefined) {
-      section = new Section(lastState);
-      this.sectionMap.set(lastState, section);
+    let lastRenderable: SwitchState | Section | undefined;
+
+    if (this.renderables.length > 0) {
+      lastRenderable = this.renderables[this.renderables.length - 1];
     }
+
+    let section: Section | undefined;
+    if (lastRenderable === undefined || lastRenderable instanceof SwitchState) {
+      section = new Section([]);
+      this.renderables.push(section);
+    } else {
+      section = lastRenderable;
+    }
+
     section.parseDescriptionLine(line);
 
     return READ_SECTION;
@@ -129,17 +137,15 @@ export default class AppTable {
 
   print(): void {
     let outBytes = '';
-    for (let i = 0; i < this.stateCount; i += 1) {
-      const state = this.stateMap[i];
-
-      outBytes = outBytes.concat(i.toString());
-      outBytes = outBytes.concat('\n');
-      outBytes = outBytes.concat(state.format(i));
-      outBytes = outBytes.concat('\n');
-
-      const nextSection = this.sectionMap.get(state);
-      if (nextSection !== undefined) {
-        outBytes = outBytes.concat(`\n${nextSection.format()}\n`);
+    for (let i = 0; i < this.renderables.length; i += 1) {
+      const renderable = this.renderables[i];
+      if (renderable instanceof SwitchState) {
+        outBytes = outBytes.concat(i.toString());
+        outBytes = outBytes.concat('\n');
+        outBytes = outBytes.concat(renderable.format(i));
+        outBytes = outBytes.concat('\n');
+      } else if (renderable instanceof Section) {
+        outBytes = outBytes.concat(`\n${renderable.format()}\n`);
       }
     }
   }
@@ -162,28 +168,21 @@ export default class AppTable {
     state: SwitchState = new SwitchState('myNewState', [], [], 'myNewState')
   ): boolean {
     if (this.stateCount === 0) {
-      this.stateMap.splice(0, 0, state);
+      this.stateMap.push(state);
+      this.renderables.push(state);
       return true;
     }
 
     if (parentState == null) return false;
-    let parentIndex = 0;
 
-    parentIndex = this.stateMap.indexOf(parentState);
+    const parentStateMapIndex = this.stateMap.indexOf(parentState);
+    const parentRenderableIndex = this.renderables.indexOf(parentState);
 
-    if (parentIndex === -1) return false;
+    if (parentStateMapIndex === -1 || parentRenderableIndex === -1)
+      return false;
 
-    if (after) {
-      parentIndex += 1;
-      const section = this.sectionMap.get(parentState);
-      if (section !== undefined) {
-        this.sectionMap.delete(parentState);
-        section.parentState = state;
-        this.sectionMap.set(state, section);
-      }
-    }
-
-    this.stateMap.splice(parentIndex, 0, state);
+    this.stateMap.splice(parentStateMapIndex + (after ? 1 : 0), 0, state);
+    this.renderables.splice(parentRenderableIndex + (after ? 1 : 0), 0, state);
 
     return true;
   }
@@ -218,20 +217,22 @@ export default class AppTable {
     return true;
   }
 
-  insertSection(afterState: SwitchState, sectionLines: string[]) {
-    if (afterState == null || sectionLines == null) return false;
+  insertSection(state: SwitchState, after: boolean, sectionLines: string[]) {
+    if (state == null || sectionLines == null) return false;
 
-    if (this.sectionMap.get(afterState) != null) return false;
+    const index = this.renderables.indexOf(state);
+    if (this.stateMap.indexOf(state) === -1 || index === -1) return false;
 
-    if (this.stateMap.indexOf(afterState) === -1) return false;
-
-    const section = new Section(afterState, sectionLines);
-    this.sectionMap.set(afterState, section);
+    const section = new Section(sectionLines);
+    this.renderables.splice(index + (after ? 1 : 0), 0, section);
     return true;
   }
 
   deleteSection(section: Section) {
-    return this.sectionMap.delete(section.parentState);
+    const index = this.renderables.indexOf(section);
+    if (index >= 0) {
+      this.renderables.splice(index, 1);
+    }
   }
 
   duplicateState(

@@ -1,12 +1,7 @@
-import SwitchState from './SwitchState';
-
 export default class Section {
-  parentState: SwitchState;
-
   descriptionLines: string[];
 
-  constructor(parentState: SwitchState, descriptionLines: string[] = []) {
-    this.parentState = parentState;
+  constructor(descriptionLines: string[] = []) {
     this.descriptionLines = descriptionLines;
   }
 
