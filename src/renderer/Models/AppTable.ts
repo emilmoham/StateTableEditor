@@ -69,6 +69,7 @@ export default class AppTable {
     const data = SwitchState.parseState(line);
     if (!data) return READ_ERROR;
     this.stateMap.push(data);
+    this.renderables.push(data);
     return READ_NEXT;
   }
 
@@ -189,6 +190,7 @@ export default class AppTable {
 
   deleteState(state: SwitchState, replacementState: SwitchState | null = null) {
     const stateIndex = this.stateMap.indexOf(state);
+    const renderableIndex = this.renderables.indexOf(state);
     const replacementStateIndex =
       replacementState == null ? -1 : this.stateMap.indexOf(replacementState);
 
@@ -199,7 +201,8 @@ export default class AppTable {
       return false;
 
     if (this.stateCount === 1 && stateIndex === 0) {
-      this.stateMap.pop();
+      this.stateMap.splice(stateIndex, 1);
+      this.renderables.splice(renderableIndex, 1);
       return true;
     }
 
@@ -214,6 +217,7 @@ export default class AppTable {
     });
 
     this.stateMap.splice(stateIndex, 1);
+    this.renderables.splice(renderableIndex, 1);
     return true;
   }
 

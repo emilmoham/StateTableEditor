@@ -1,13 +1,17 @@
 import { useState } from 'react';
 
-export default function EditableCell(props: { value: string }) {
-  const { value } = props;
+const defaultProps = {
+  colSpan: 1,
+};
+
+function EditableCell(props: { value: string; colSpan?: number }) {
+  const { value, colSpan } = props;
   const [isInEditMode, setIsInEditMode] = useState(false);
   const [currentValue, setCurrentValue] = useState(value);
 
   if (isInEditMode)
     return (
-      <td>
+      <td colSpan={colSpan ?? 1}>
         <input
           className="edit"
           type="text"
@@ -23,6 +27,7 @@ export default function EditableCell(props: { value: string }) {
     );
   return (
     <td
+      colSpan={colSpan ?? 1}
       onDoubleClick={() => {
         setIsInEditMode(true);
       }}
@@ -31,3 +36,7 @@ export default function EditableCell(props: { value: string }) {
     </td>
   );
 }
+
+EditableCell.defaultProps = defaultProps;
+
+export default EditableCell;

@@ -13,28 +13,44 @@ export default function TableView() {
     if (tables.length > 0) {
       const table = tables[0];
       table.resolveAllStateReturnIds();
-      return table.stateMap.map((state) => {
-        const stateId = state.getStateId(table.stateMap);
+      return table.renderables.map((renderable) => {
+        if (renderable instanceof SwitchState) {
+          const stateId = renderable.getStateId(table.stateMap);
+          return (
+            <tr key={stateId}>
+              <td>{stateId}</td>
+              <EditableCell value={renderable.name} />
+
+              {renderable.returnStateIds.map((id) => {
+                return <EditableCell value={id.toString()} />;
+              })}
+
+              {[
+                ...Array(
+                  SwitchState.MAX_STATES - renderable.returnStateIds.length
+                ),
+              ].map(() => {
+                return <EditableCell value="" />;
+              })}
+              <EditableCell value={renderable.description} />
+            </tr>
+          );
+        }
         return (
-          <tr key={stateId}>
-            <td>{stateId}</td>
-            <EditableCell value={state.name} />
-
-            {state.returnStateIds.map((id) => {
-              return <EditableCell value={id.toString()} />;
-            })}
-
-            {[
-              ...Array(SwitchState.MAX_STATES - state.returnStateIds.length),
-            ].map(() => {
-              return <EditableCell value="" />;
-            })}
-            <EditableCell value={state.description} />
+          <tr>
+            <EditableCell
+              colSpan={SwitchState.MAX_STATES + 3}
+              value={renderable.descriptionLines.join('\n')}
+            />
           </tr>
         );
       });
     }
-    return <tr>None</tr>;
+    return (
+      <tr>
+        <p>None</p>
+      </tr>
+    );
   }
 
   return (
