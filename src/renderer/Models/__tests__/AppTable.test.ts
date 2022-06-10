@@ -1,5 +1,6 @@
 import AppTable from '../AppTable';
 import SwitchState from '../SwitchState';
+import Section from '../Section';
 
 test('parse good header', () => {
   expect(AppTable.parseHeader('#$HEADER; NULL')).toBe(AppTable.READ_NEXT);
@@ -276,9 +277,12 @@ test('insert section single line', () => {
   expect(rc).toBe(true);
   const lastState = table.stateMap[0];
 
-  rc = table.insertSection(lastState, sectionLines);
+  rc = table.insertSection(lastState, true, sectionLines);
   expect(rc).toBe(true);
-  expect(table.sectionMap.get(lastState)?.descriptionLines).toBe(sectionLines);
+  const renderable: SwitchState | Section =
+    table.renderables[table.renderables.indexOf(lastState) + 1];
+  expect(renderable).toBeInstanceOf(Section);
+  expect((<Section>renderable).descriptionLines).toBe(sectionLines);
 });
 
 test('insert section multiple lines', () => {
@@ -292,9 +296,12 @@ test('insert section multiple lines', () => {
   expect(rc).toBe(true);
   const lastState = table.stateMap[0];
 
-  rc = table.insertSection(lastState, sectionLines);
+  rc = table.insertSection(lastState, true, sectionLines);
   expect(rc).toBe(true);
-  expect(table.sectionMap.get(lastState)?.descriptionLines).toBe(sectionLines);
+  const renderable: SwitchState | Section =
+    table.renderables[table.renderables.indexOf(lastState) + 1];
+  expect(renderable).toBeInstanceOf(Section);
+  expect((<Section>renderable).descriptionLines).toBe(sectionLines);
 });
 
 test('insert section invalid after state', () => {
@@ -303,7 +310,7 @@ test('insert section invalid after state', () => {
 
   const invalidState = new SwitchState('invalidState', [], [], 'invalid state');
 
-  const rc = table.insertSection(invalidState, sectionLines);
+  const rc = table.insertSection(invalidState, true, sectionLines);
   expect(rc).toBe(false);
 });
 
@@ -318,11 +325,12 @@ test('insert section at state already before another section', () => {
   expect(rc).toBe(true);
   const lastState = table.stateMap[0];
 
-  rc = table.insertSection(lastState, sectionLines);
+  rc = table.insertSection(lastState, true, sectionLines);
   expect(rc).toBe(true);
 
-  rc = table.insertSection(lastState, sectionLines);
-  expect(rc).toBe(false);
+  rc = table.insertSection(lastState, true, sectionLines);
+  expect(rc).toBe(true);
+  expect(table.renderables.length).toBe(3);
 });
 
 test('delete valid section', () => {
@@ -335,10 +343,14 @@ test('delete valid section', () => {
   expect(rc).toBe(true);
 
   const lastState = table.stateMap[0];
-  rc = table.insertSection(lastState, ['test']);
+  rc = table.insertSection(lastState, true, ['test']);
   expect(rc).toBe(true);
-  const section = table.sectionMap.get(lastState);
-  if (section != null) rc = table.deleteSection(section);
+
+  const renderable: SwitchState | Section =
+    table.renderables[table.renderables.indexOf(lastState) + 1];
+  expect(renderable).toBeInstanceOf(Section);
+
+  rc = table.deleteSection(<Section>renderable);
   expect(rc).toBe(true);
 });
 
@@ -352,12 +364,16 @@ test('delete invalid section', () => {
   expect(rc).toBe(true);
 
   const lastState = table.stateMap[0];
-  rc = table.insertSection(lastState, ['test']);
+  rc = table.insertSection(lastState, true, ['test']);
   expect(rc).toBe(true);
-  const section = table.sectionMap.get(lastState);
-  if (section != null) rc = table.deleteSection(section);
+
+  const renderable: SwitchState | Section =
+    table.renderables[table.renderables.indexOf(lastState) + 1];
+  expect(renderable).toBeInstanceOf(Section);
+
+  rc = table.deleteSection(<Section>renderable);
   expect(rc).toBe(true);
-  if (section != null) rc = table.deleteSection(section);
+  rc = table.deleteSection(<Section>renderable);
   expect(rc).toBe(false);
 });
 
@@ -372,10 +388,12 @@ test('insert state after a state before section', () => {
   expect(rc).toBe(true);
 
   const parentState = table.stateMap[0];
-  rc = table.insertSection(parentState, ['test']);
+  rc = table.insertSection(parentState, true, ['test']);
   expect(rc).toBe(true);
-  const section = table.sectionMap.get(parentState);
-  expect(section?.parentState).toBe(parentState);
+
+  const renderable: SwitchState | Section =
+    table.renderables[table.renderables.indexOf(parentState) + 1];
+  expect(renderable).toBeInstanceOf(Section);
 
   rc = table.insertState(
     parentState,
@@ -383,7 +401,8 @@ test('insert state after a state before section', () => {
     new SwitchState('state1', [], [], 'state 1')
   );
   const childState = table.stateMap[1];
-  expect(section?.parentState).toBe(childState);
+  expect(table.renderables.length).toBe(3);
+  expect(table.renderables[1]).toBe(childState);
 });
 
 test('duplicate valid state before', () => {

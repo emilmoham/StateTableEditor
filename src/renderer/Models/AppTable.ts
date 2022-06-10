@@ -228,11 +228,11 @@ export default class AppTable {
     return true;
   }
 
-  deleteSection(section: Section) {
+  deleteSection(section: Section): boolean {
     const index = this.renderables.indexOf(section);
-    if (index >= 0) {
-      this.renderables.splice(index, 1);
-    }
+    if (index === -1) return false;
+    this.renderables.splice(index, 1);
+    return true;
   }
 
   duplicateState(
