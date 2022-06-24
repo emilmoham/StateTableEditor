@@ -55,7 +55,7 @@ export default function TableView() {
 
   return (
     <Container fluid>
-      <Table striped bordered hover>
+      <Table bordered hover>
         <thead>
           <tr>
             <th>StateID</th>
