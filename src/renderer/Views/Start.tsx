@@ -1,4 +1,4 @@
-import { useContext, useEffect, useCallback } from 'react';
+import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Row, Col } from 'react-bootstrap';
 import './Start.css';
@@ -10,7 +10,7 @@ export default function Start() {
   const tables: AppTable[] = useContext(AppTableContext);
 
   useEffect(() => {
-    window.electron.ipcRenderer.on('file-io-response', (arg: any) => {
+    window.electron.ipcRenderer.on('file-io', (arg: any) => {
       // const _operation = arg[0];
       // @TODO: move to callback
       const filepath = arg[1];

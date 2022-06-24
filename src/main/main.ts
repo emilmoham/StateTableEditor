@@ -10,12 +10,15 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { readFile } from 'fs';
+
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+
+import './ipcExample';
+import './fileIO';
 
 export default class AppUpdater {
   constructor() {
@@ -26,12 +29,6 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -137,35 +134,3 @@ app
     });
   })
   .catch(console.log);
-
-async function loadFile() {
-  const { filePaths } = await dialog.showOpenDialog({
-    properties: ['openFile'],
-    filters: [{ name: 'BubbleLink Application Table', extensions: ['app'] }],
-  });
-
-  readFile(filePaths[0], 'utf8', (err, data) => {
-    if (err) {
-      console.log(err);
-      return false;
-    }
-
-    mainWindow?.webContents.send('file-io-response', [
-      'load',
-      filePaths[0],
-      data,
-    ]);
-    return true;
-  });
-}
-
-ipcMain.on('file-io', (_event, arg) => {
-  const operation: string = arg[0];
-  switch (operation) {
-    case 'load':
-      loadFile();
-      break;
-    default:
-      console.log(`Unsupported Operation: ${operation}`);
-  }
-});
