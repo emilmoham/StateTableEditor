@@ -1,31 +1,31 @@
-enum ParseStates {
-    Header,
-    Next,
-    State,
-    Section,
-    Error
-}
+// enum ParseStates {
+//     Header,
+//     Next,
+//     State,
+//     Section,
+//     Error
+// }
 
 use std::fs::File;
 use std::io::{ self, BufRead };
 
-use crate::models::renderable::Renderable;
-use crate::models::state::State;
+//use crate::models::renderable::Renderable;
+//use crate::models::state::State;
 
 
 #[derive(Debug)]
 pub struct AppTable {
     filename: String,
-    renderables: Vec<Renderable>,
-    states: Vec<State>
+    //renderables: Vec<Renderable>,
+    //states: Vec<State>
 }
 
 impl AppTable {
     pub fn new(filename: String) -> Self {
         Self {
             filename: filename,
-            renderables: Vec::new(),
-            states: Vec::new()
+            //renderables: Vec::new(),
+            //states: Vec::new()
         }
     }
 
@@ -43,4 +43,8 @@ impl AppTable {
         let file = File::open(filename)?;
         Ok(io::BufReader::new(file).lines())
     }
+
+    pub fn say(self) {
+        println!("{}", self.filename);
+    } 
 }

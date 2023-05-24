@@ -1,6 +1,7 @@
 use std::string::ToString;
 use std::collections::HashMap;
 use regex::Regex;
+use regex::Captures;
 
 #[derive(Debug)]
 pub struct State {
@@ -36,28 +37,28 @@ impl State {
         }
     }
 
-    pub fn parse(input: &str) -> Result<State, String> {
-        let re = Regex::new(r"#\$State ;(\w{0,})[ ]?;([ \d]{0,});\[(\d+)\] (.{0,})").unwrap();
-        if !re.is_match(input) {
-            return Err("Parse Error".to_string());
-        }
+    pub fn read(input: &str) -> Result<State, String> {
+        let caps = Self::regex_parse(input).unwrap();
 
-        let caps: Vec<&str> = re.captures(input).expect("Uh oh").get(1).iter().map(|x| x.as_str()).collect();
-
-        if caps.len() < 4 {
+        if caps.len() != 5 {
             return Err(format!("Incorrect number of matches: {}", caps.len()));
         }
 
         let state = State {
-            id: caps[2].parse().unwrap(),
-            name: caps[0].to_string(),
-            return_state_ids: caps[1].split(' ').map(|x| x.parse::<u16>().unwrap()).collect(),
+            id: caps[3].parse().unwrap(),
+            name: caps[1].to_string(),
+            return_state_ids: caps[2].split_ascii_whitespace().map(|x| x.parse::<u16>().unwrap()).collect(),
             return_state_refs: Vec::new(),
             callers: HashMap::new(),
-            description: caps[3].to_string()
+            description: caps[4].to_string()
         };
 
         return Ok(state);
+    }
+
+    fn regex_parse(input: &str) -> Option<Captures<'_>> {
+        let re = Regex::new(r"#\$State ;(\w{1,})[ ]?;\s{0,1}(\S{1}[ \d]{0,})\s{0,1};\[(\d+)\]\s{0,1}(\S{1}.{0,})").unwrap();
+        return re.captures(input);
     }
 }
 
@@ -67,15 +68,59 @@ mod tests {
     use crate::State;
 
     #[test]
+    fn parse_valid_state() {
+        let state = State::regex_parse("#$State ;StateName; 0 1 84 3 ;[2] This is a valid state");
+        assert!(state.is_some());
+    }
+
+    #[test]
+    fn regex_parse_no_input() {
+        let state = State::regex_parse("");
+        assert!(state.is_none());
+    }
+
+    #[test]
+    fn regex_parse_no_state_name() {
+        let state = State::regex_parse("#$State ;; 0 1 84 3 ;[2] This is a valid state");
+        assert!(state.is_none());
+    }
+
+    #[test]
+    fn regex_parse_no_return_states() {
+        let state = State::regex_parse("#$State ;StateName;;[2] This is a valid state");
+        assert!(state.is_none());
+    }
+
+    #[test]
+    fn regex_parse_no_padding_around_return_states() {
+        let state = State::regex_parse("#$State ;StateName;0 1 84 3;[2] This is a valid state");
+        assert!(state.is_some());
+    }
+
+    #[test]
+    fn regex_parse_no_description() {
+        let state = State::regex_parse("#$State ;StateName;0 1 84 3;[2]");
+        assert!(state.is_none());
+    }
+
+    #[test]
+    fn regex_parse_description_no_leading_space() {
+        let state = State::regex_parse("#$State ;StateName;0 1 84 3;[2]This is a state description");
+        assert!(state.is_some());
+    }
+
+
+
+    #[test]
     fn parse_single_digit_id() {
         let input = String::from("#$State ;StateName; 0 1 84 3 ;[2] State Description");
-        let output = State::parse(&input);
+        let output = State::read(&input);
         
         //assert!(output.is_ok());
 
         let state = output.unwrap();
 
-        assert_eq!(state.id, 0);
+        assert_eq!(state.id, 2);
         assert_eq!(state.name, "StateName".to_string());
         assert_eq!(state.return_state_ids, vec!(0, 1, 84, 3));
     }
