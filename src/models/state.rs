@@ -61,7 +61,7 @@ impl State {
 #[cfg(test)]
 mod tests {
     
-    use crate::State;
+    use crate::models::state::State;
 
     #[test]
     fn parse_valid_state() {
