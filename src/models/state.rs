@@ -40,10 +40,6 @@ impl State {
     pub fn read(input: &str) -> Result<State, String> {
         let caps = Self::regex_parse(input).unwrap();
 
-        if caps.len() != 5 {
-            return Err(format!("Incorrect number of matches: {}", caps.len()));
-        }
-
         let state = State {
             id: caps[3].parse().unwrap(),
             name: caps[1].to_string(),
@@ -57,7 +53,7 @@ impl State {
     }
 
     fn regex_parse(input: &str) -> Option<Captures<'_>> {
-        let re = Regex::new(r"#\$State ;(\w{1,})[ ]?;\s{0,1}(\S{1}[ \d]{0,})\s{0,1};\[(\d+)\]\s{0,1}(\S{1}.{0,})").unwrap();
+        let re = Regex::new(r"#\$State ;(\w+)\s?;\s?(\S[ \d]+)\s?;\[(\d+)\]\s?(\S.+)").unwrap();
         return re.captures(input);
     }
 }
@@ -98,8 +94,14 @@ mod tests {
     }
 
     #[test]
+    fn regex_parse_too_much_padding_around_return_states() {
+        let state = State::regex_parse("#$State ;StateName;  0 1 84 3  ;[2] This is a valid state");
+        assert!(state.is_none());
+    }
+
+    #[test]
     fn regex_parse_no_description() {
-        let state = State::regex_parse("#$State ;StateName;0 1 84 3;[2]");
+        let state = State::regex_parse("#$State ;StateName; 0 1 84 3 ;[2]  ");
         assert!(state.is_none());
     }
 
@@ -116,12 +118,28 @@ mod tests {
         let input = String::from("#$State ;StateName; 0 1 84 3 ;[2] State Description");
         let output = State::read(&input);
         
-        //assert!(output.is_ok());
+        assert!(output.is_ok());
 
         let state = output.unwrap();
 
         assert_eq!(state.id, 2);
         assert_eq!(state.name, "StateName".to_string());
         assert_eq!(state.return_state_ids, vec!(0, 1, 84, 3));
+        assert_eq!(state.description, "State Description".to_string());
+    }
+
+    #[test]
+    fn parse_mutli_digit_id() {
+        let input = String::from("#$State ;StateName; 0 1 84 310 ;[244] State Description");
+        let output = State::read(&input);
+        
+        assert!(output.is_ok());
+
+        let state = output.unwrap();
+
+        assert_eq!(state.id, 244);
+        assert_eq!(state.name, "StateName".to_string());
+        assert_eq!(state.return_state_ids, vec!(0, 1, 84, 310));
+        assert_eq!(state.description, "State Description".to_string());
     }
 }
