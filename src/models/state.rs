@@ -3,13 +3,16 @@ use std::collections::HashMap;
 use regex::Regex;
 use regex::Captures;
 
+const MIN_STATES:u32 = 2;
+const MAX_STATES:u32 = 20;
+
 #[derive(Debug)]
 pub struct State {
-    pub id: u16,
+    pub id: u32,
     pub name: String,
-    pub return_state_ids: Vec<u16>,
+    pub return_state_ids: Vec<u32>,
     pub return_state_refs: Vec<State>,
-    pub callers: HashMap<State, u16>,
+    pub callers: HashMap<State, u32>,
     pub description: String 
 }
 
@@ -21,7 +24,7 @@ impl ToString for State {
             acc 
         });
         
-        format!("{}\n#$State ;{}; {};[{}] {}", self.id, &self.name, "test".to_string(), self.id, &self.description)
+        format!("{}\n#$State ;{}; {};[{}] {}", self.id, &self.name, formatted_returns, self.id, &self.description)
     }
 }
 
@@ -38,18 +41,26 @@ impl State {
     }
 
     pub fn read(input: &str) -> Result<State, String> {
-        let caps = Self::regex_parse(input).unwrap();
+        if let Some(caps) = Self::regex_parse(input) {
+            let return_states: Vec<u32> = caps[2].split_ascii_whitespace().map(|x| x.parse::<u32>().unwrap()).collect();
 
-        let state = State {
-            id: caps[3].parse().unwrap(),
-            name: caps[1].to_string(),
-            return_state_ids: caps[2].split_ascii_whitespace().map(|x| x.parse::<u16>().unwrap()).collect(),
-            return_state_refs: Vec::new(),
-            callers: HashMap::new(),
-            description: caps[4].to_string()
-        };
+            if return_states.len() < MIN_STATES.try_into().unwrap() || return_states.len() > MAX_STATES.try_into().unwrap() {
+                return Err("Invalid number of return states".to_string());
+            }
 
-        return Ok(state);
+            let state = State {
+                id: caps[3].parse().unwrap(),
+                name: caps[1].to_string(),
+                return_state_ids: return_states,
+                return_state_refs: Vec::new(),
+                callers: HashMap::new(),
+                description: caps[4].to_string()
+            };
+
+            return Ok(state);
+        } 
+        
+        Err("Parse Error".to_string())
     }
 
     fn regex_parse(input: &str) -> Option<Captures<'_>> {
@@ -62,6 +73,7 @@ impl State {
 mod tests {
     
     use crate::models::state::State;
+    use std::collections::HashMap;
 
     #[test]
     fn parse_valid_state() {
@@ -111,8 +123,6 @@ mod tests {
         assert!(state.is_some());
     }
 
-
-
     #[test]
     fn parse_single_digit_id() {
         let input = String::from("#$State ;StateName; 0 1 84 3 ;[2] State Description");
@@ -141,5 +151,26 @@ mod tests {
         assert_eq!(state.name, "StateName".to_string());
         assert_eq!(state.return_state_ids, vec!(0, 1, 84, 310));
         assert_eq!(state.description, "State Description".to_string());
+    }
+
+    #[test]
+    fn parse_too_many_return_states() {
+        let input = String::from("#$State ;Reject; 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 ;[13] Too many Return states");
+        let state = State::read(&input);
+        assert!(state.is_err());
+    }
+
+    #[test]
+    fn format() {
+        let state = State {
+            id: 0,
+            name: "test".to_string(),
+            return_state_ids: vec![0, 1, 23, 425],
+            return_state_refs: Vec::new(),
+            callers: HashMap::new(),
+            description: "test state".to_string()
+        };
+        let expected_output = "0\n#$State ;test; 0 1 23 425 ;[0] test state".to_string();
+        assert_eq!(state.to_string(), expected_output);
     }
 }
