@@ -67,6 +67,26 @@ impl State {
         let re = Regex::new(r"#\$State ;(\w+)\s?;\s?(\S[ \d]+)\s?;\[(\d+)\]\s?(\S.+)").unwrap();
         return re.captures(input);
     }
+
+    pub fn resolve_return_state_ids(&mut self, _state_map: &Vec<State>) -> Result<u32, String> {
+        panic!();
+    }
+
+    pub fn resolve_return_state_refs(&mut self, _state_map: &Vec<State>) -> Result<State, String> {
+        panic!();
+    }
+
+    pub fn set_return_state(&mut self, _index: u32, _state: State) -> Result<bool, String> {
+        panic!();
+    }
+
+    pub fn add_caller(&mut self, _state: State) {
+        panic!();
+    }
+
+    pub fn remove_caller(&mut self, _state: State) {
+        panic!();
+    }
 }
 
 #[cfg(test)]
@@ -172,5 +192,95 @@ mod tests {
         };
         let expected_output = "0\n#$State ;test; 0 1 23 425 ;[0] test state".to_string();
         assert_eq!(state.to_string(), expected_output);
+    }
+
+    #[test]
+    fn resolve_return_state_id_all_defined() {
+        let mut state0 = State { 
+            id: 10,
+            name: "state0".to_string(),
+            return_state_ids: Vec::new(),
+            return_state_refs: Vec::new(),
+            callers: HashMap::new(),
+            description: "test state 0".to_string()
+        };
+
+        let mut state1 = State { 
+            id: 10,
+            name: "state1".to_string(),
+            return_state_ids: Vec::new(),
+            return_state_refs: Vec::new(),
+            callers: HashMap::new(),
+            description: "test state 0".to_string()
+        };
+
+        let map: Vec<State> = Vec::new();
+        
+        assert!(state0.resolve_return_state_ids(&map).is_ok());
+        assert_eq!(state0.return_state_ids, vec![0, 1]);
+
+        assert!(state1.resolve_return_state_ids(&map).is_ok());
+        assert_eq!(state1.return_state_ids, vec![1, 0]);
+    }
+
+    #[test]
+    fn resolve_return_state_ids_incomplete_map() {
+        assert!(true);
+    }
+
+    #[test]
+    fn resolve_return_state_refs_all_defined() {
+        assert!(true);
+    }
+
+    #[test]
+    fn resolve_return_state_refs_incomplete_map() {
+        assert!(true);
+    }
+
+    #[test]
+    fn set_return_state_first_return_state() {
+        assert!(true);
+    }
+
+    #[test]
+    fn set_return_state_add_return_state_out_of_order() {
+        assert!(true);
+    }
+
+    #[test]
+    fn set_return_state_add_too_many_return_states() {
+        assert!(true);
+    }
+
+    
+    #[test]
+    fn set_return_state_add_state_already_at_index() {
+        assert!(true);
+    }
+
+    #[test]
+    fn add_caller_first_reference() {
+        assert!(true);
+    }
+
+    #[test]
+    fn add_caller_reference_2_or_more() {
+        assert!(true);
+    }
+
+    #[test]
+    fn remove_caller_only_reference() {
+        assert!(true);
+    }
+
+    #[test]
+    fn remove_caller_multiple_references() {
+        assert!(true);
+    }
+
+    #[test]
+    fn remove_caller_invalid_reference() {
+        assert!(true);
     }
 }
