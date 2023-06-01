@@ -1,5 +1,6 @@
 use std::string::ToString;
 use std::collections::HashMap;
+use std::rc::Rc;
 use regex::Regex;
 use regex::Captures;
 
@@ -11,10 +12,14 @@ pub struct State {
     pub id: u32,
     pub name: String,
     pub return_state_ids: Vec<u32>,
-    pub return_state_refs: Vec<State>,
-    pub callers: HashMap<State, u32>,
+    pub return_state_refs: Vec<Rc<State>>,
+    //pub callers: HashMap<State, u32>,
     pub description: String 
 }
+
+// #[derive(Debug, Clone)]
+// struct StateRef(Rc<RefCell<State>>);
+
 
 impl ToString for State {
     fn to_string(&self) -> String {
@@ -35,7 +40,7 @@ impl State {
             name: "".to_string(),
             return_state_ids: Vec::new(),
             return_state_refs: Vec::new(),
-            callers: HashMap::new(),
+            //callers: HashMap::new(),
             description: "".to_string()
         }
     }
@@ -53,7 +58,7 @@ impl State {
                 name: caps[1].to_string(),
                 return_state_ids: return_states,
                 return_state_refs: Vec::new(),
-                callers: HashMap::new(),
+                //callers: HashMap::new(),
                 description: caps[4].to_string()
             };
 
@@ -68,24 +73,24 @@ impl State {
         return re.captures(input);
     }
 
-    pub fn resolve_return_state_ids(&mut self, _state_map: &Vec<State>) -> Result<u32, String> {
-        panic!();
+    pub fn resolve_return_state_ids(&mut self, _state_map: &Vec<Rc<State>>) -> Result<u32, u32> {
+        todo!();
     }
 
     pub fn resolve_return_state_refs(&mut self, _state_map: &Vec<State>) -> Result<State, String> {
-        panic!();
+        todo!();
     }
 
     pub fn set_return_state(&mut self, _index: u32, _state: State) -> Result<bool, String> {
-        panic!();
+        todo!();
     }
 
     pub fn add_caller(&mut self, _state: State) {
-        panic!();
+        todo!();
     }
 
     pub fn remove_caller(&mut self, _state: State) {
-        panic!();
+        todo!();
     }
 }
 
@@ -94,6 +99,7 @@ mod tests {
     
     use crate::models::state::State;
     use std::collections::HashMap;
+    use std::rc::Rc;
 
     #[test]
     fn parse_valid_state() {
@@ -187,7 +193,7 @@ mod tests {
             name: "test".to_string(),
             return_state_ids: vec![0, 1, 23, 425],
             return_state_refs: Vec::new(),
-            callers: HashMap::new(),
+            //callers: HashMap::new(),
             description: "test state".to_string()
         };
         let expected_output = "0\n#$State ;test; 0 1 23 425 ;[0] test state".to_string();
@@ -196,37 +202,67 @@ mod tests {
 
     #[test]
     fn resolve_return_state_id_all_defined() {
-        let mut state0 = State { 
+        let mut state0 = Rc::new(State { 
             id: 10,
             name: "state0".to_string(),
             return_state_ids: Vec::new(),
             return_state_refs: Vec::new(),
-            callers: HashMap::new(),
+            //callers: HashMap::new(),
             description: "test state 0".to_string()
-        };
+        });
 
-        let mut state1 = State { 
+        let mut state1 = Rc::new(State { 
             id: 10,
             name: "state1".to_string(),
             return_state_ids: Vec::new(),
             return_state_refs: Vec::new(),
-            callers: HashMap::new(),
-            description: "test state 0".to_string()
-        };
+            //callers: HashMap::new(),
+            description: "test state 1".to_string()
+        });
 
-        let map: Vec<State> = Vec::new();
-        
-        assert!(state0.resolve_return_state_ids(&map).is_ok());
-        assert_eq!(state0.return_state_ids, vec![0, 1]);
+        let map: Vec<Rc<State>> = vec![Rc::clone(&state0),Rc::clone(&state1)];
 
-        assert!(state1.resolve_return_state_ids(&map).is_ok());
-        assert_eq!(state1.return_state_ids, vec![1, 0]);
+        if let Some(mutable_state_0) = Rc::<State>::get_mut(&mut state0) {
+            assert!(mutable_state_0.resolve_return_state_ids(&map).is_ok());
+            assert_eq!(mutable_state_0.return_state_ids, vec![0, 1]);
+        } else {
+            panic!("mutable state was None");
+        }
+
+        if let Some(mutable_state_1) = Rc::<State>::get_mut(&mut state1) {
+            assert!(mutable_state_1.resolve_return_state_ids(&map).is_ok());
+            assert_eq!(mutable_state_1.return_state_ids, vec![1, 0]);
+        } else {
+            panic!();
+        }
     }
 
-    #[test]
-    fn resolve_return_state_ids_incomplete_map() {
-        assert!(true);
-    }
+    // #[test]
+    // fn resolve_return_state_ids_incomplete_map() {
+    //     let state1 = State { 
+    //         id: 10,
+    //         name: "state1".to_string(),
+    //         return_state_ids: Vec::new(),
+    //         return_state_refs: Vec::new(),
+    //         callers: HashMap::new(),
+    //         description: "test state 1".to_string()
+    //     };
+
+    //     let mut state0 = State { 
+    //         id: 10,
+    //         name: "state0".to_string(),
+    //         return_state_ids: Vec::new(),
+    //         return_state_refs: vec![state1],
+    //         callers: HashMap::new(),
+    //         description: "test state 0".to_string()
+    //     };
+
+    //     let map: Vec<&mut State> = vec![&mut state0];
+
+    //     let result = state0.resolve_return_state_ids(&map);
+    //     assert!(result.is_err());
+    //     assert_eq!(result.unwrap(), 0);
+    // }
 
     #[test]
     fn resolve_return_state_refs_all_defined() {
