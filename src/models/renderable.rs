@@ -1,9 +1,9 @@
 
-use crate::models::state::StateRef;
+use crate::models::state::State;
 use crate::models::section::Section;
 
 #[derive(Debug)]
 pub enum Renderable {
-    State(StateRef),
+    State(State),
     Section(Section)
 }
