@@ -72,10 +72,6 @@ impl State {
         let re = Regex::new(r"#\$State ;(\w+)\s?;\s?(\S[ \d]+)\s?;\[(\d+)\]\s?(\S.+)").unwrap();
         return re.captures(input);
     }
-
-    pub fn set_return_state(&mut self, _index: u32, _state_id: u32) -> Result<bool, String> {
-        todo!();
-    }
 }
 
 #[cfg(test)]
