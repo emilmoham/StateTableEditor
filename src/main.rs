@@ -4,8 +4,13 @@ use models::app_table::AppTable;
 // use models::state::State;
 
 fn main() {
-    // let table = AppTable::new(String::from("test.app"));
-    // table.load("sample.app");
+    let table = AppTable::new(String::from("test.app"));
+    let x = table.load("sample.app");
+
+    match x {
+        Ok(_) => println!("Done!"),
+        Err(x) => println!("{}", x)
+    }
 
     // let state = State {
     //     id: 10,
