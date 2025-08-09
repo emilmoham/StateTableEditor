@@ -1,0 +1,3 @@
+include(AddCatch2)
+
+add_subdirectory(app_table_manager_tests)
