@@ -4,6 +4,11 @@ add_library(${PROJECT_NAME})
 
 add_subdirectory(platform)
 
+target_sources(${PROJECT_NAME}
+  PRIVATE
+  string_helpers.cpp
+)
+
 target_include_directories(
   ${PROJECT_NAME}
   PRIVATE

@@ -7,5 +7,5 @@ add_subdirectory(models)
 target_include_directories(
   ${PROJECT_NAME} 
   PUBLIC 
-  ${PROJECT_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/include
 )

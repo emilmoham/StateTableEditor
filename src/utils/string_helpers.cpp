@@ -1,4 +1,4 @@
-#include "string_helpers.h"
+#include "utils/string_helpers.h"
 
 vector<string> StringHelpers::Tokenize(
   const std::string str,

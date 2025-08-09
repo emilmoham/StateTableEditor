@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "string_helpers.h"
+#include "utils/string_helpers.h"
 
 TEST_CASE("tokenize by space", "[string_helpers]") {
   vector<string> expectedOutput;

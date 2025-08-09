@@ -11,7 +11,7 @@ add_executable(
 target_include_directories(
   ${PROJECT_NAME}
   PRIVATE
-  ../../src/app_table_manager/include
+  ${CMAKE_SOURCE_DIR}/include
 )
 
 target_link_libraries(
@@ -19,6 +19,7 @@ target_link_libraries(
     PRIVATE
     Catch2::Catch2WithMain
     app_table_manager
+    state_table_editor_utils
 )
 
 include(CTest)

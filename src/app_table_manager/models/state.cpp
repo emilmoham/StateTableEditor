@@ -2,7 +2,7 @@
 
 #include <regex>
 
-#include "string_helpers.h"
+#include "utils/string_helpers.h"
 
 State::State(
   string name,
