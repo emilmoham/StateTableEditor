@@ -73,7 +73,7 @@ shared_ptr<State> State::ParseState(string input) {
   vector<int> returnStateIds;
   int returnStateId = 0;
   for (string token : returnStateIdTokens) {
-    sscanf_s(token.c_str(), "%d", &returnStateId);
+    sscanf(token.c_str(), "%d", &returnStateId);
     returnStateIds.push_back(returnStateId);
   }
 
