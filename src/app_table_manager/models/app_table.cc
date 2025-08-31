@@ -1,10 +1,10 @@
-#include "models/app_table.h"
+#include <state_table_editor/models/app_table.h>
 
 #include <fstream>
 #include <iostream>
 #include <regex>
 
-#include "models/state.h"
+#include <state_table_editor/models/state.h>
 
 namespace state_table_editor {
 

@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "models/app_table.h"
-#include "models/state.h"
+#include <state_table_editor/models/app_table.h>
+#include <state_table_editor/models/state.h>
 
 namespace state_table_editor {
 

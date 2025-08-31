@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "models/section.h"
+#include <state_table_editor/models/section.h>
 
 namespace state_table_editor {
 

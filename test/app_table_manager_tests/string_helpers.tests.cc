@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "utils/string_helpers.h"
+#include <state_table_editor/utils/string_helpers.h>
 
 namespace state_table_editor {
 
