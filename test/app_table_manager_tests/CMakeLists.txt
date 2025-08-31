@@ -2,10 +2,10 @@ project(app_table_manager_tests)
 
 add_executable(
     ${PROJECT_NAME}
-    app_table.tests.cpp
-    section.tests.cpp
-    state.tests.cpp
-    string_helpers.tests.cpp
+    app_table.tests.cc
+    section.tests.cc
+    state.tests.cc
+    string_helpers.tests.cc
 )
 
 target_include_directories(

@@ -7,6 +7,8 @@ using std::string;
 using std::vector;
 using std::weak_ptr;
 
+namespace state_table_editor {
+
 TEST_CASE("format states", "[state]") {
   SECTION("basic format") {
     vector<int> returnStates = vector<int>({ 0, 1, 2, 3, 4 });
@@ -156,3 +158,5 @@ TEST_CASE("resolve return state refs", "[state]") {
     REQUIRE(!state0->ResolveReturnStateRefs(stateMap));
   }
 }
+
+}  // namespace state_table_editor

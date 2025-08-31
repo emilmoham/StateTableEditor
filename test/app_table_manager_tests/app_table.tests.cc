@@ -3,6 +3,8 @@
 #include "models/app_table.h"
 #include "models/state.h"
 
+namespace state_table_editor {
+
 TEST_CASE("state map metadata", "[app_table]") {
   AppTable appTable("");
 
@@ -168,3 +170,5 @@ TEST_CASE("delete state", "[app_table]") {
      REQUIRE(appTable.GetState(1)->GetReturnStateRefs().at(2) == state0);
   }
 }
+
+}  // namespace state_table_editor

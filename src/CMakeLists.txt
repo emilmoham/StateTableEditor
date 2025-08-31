@@ -2,7 +2,7 @@ find_package(OpenGL REQUIRED)
 
 project(state_table_editor)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cc)
 
 add_subdirectory(app_table_manager)
 add_subdirectory(utils)

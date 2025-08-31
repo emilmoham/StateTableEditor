@@ -2,6 +2,8 @@
 
 #include <regex>
 
+namespace state_table_editor {
+
 Section::Section(vector<string> descriptionLines) {
   description = vector<string>(descriptionLines);
 }
@@ -35,3 +37,5 @@ string Section::Format(int id) {
 vector<string> Section::GetDescription() {
   return description;
 }
+
+} // namespace state_table_editor

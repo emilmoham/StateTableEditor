@@ -2,6 +2,8 @@
 
 #include "models/section.h"
 
+namespace state_table_editor {
+
 TEST_CASE("parse sections", "[section]") {
   Section section = Section();
 
@@ -91,3 +93,5 @@ TEST_CASE("format sections", "[section]") {
     REQUIRE(section.Format() == output);
   }
 }
+
+} // namespace state_table_editor

@@ -6,6 +6,8 @@
 
 #include "models/state.h"
 
+namespace state_table_editor {
+
 AppTable::AppTable(string filename) : filename(filename) {}
 
 AppTable::ParseState AppTable::ParseHeader(std::string line) {
@@ -215,3 +217,5 @@ bool AppTable::DeleteState(
   renderables.erase(deletionRenderableIterator);
   return true;
 }
+
+} // namespace state_table_editor

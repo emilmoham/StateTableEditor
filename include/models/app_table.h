@@ -13,6 +13,8 @@ using std::shared_ptr;
 using std::string;
 using std::vector;
 
+namespace state_table_editor {
+
 class AppTable {
  public:
   explicit AppTable(string filename);
@@ -79,5 +81,7 @@ class AppTable {
   void ResolveAllReturnStateRefs();
 
 };
+ 
+}  // namespace state_table_editor
 
 #endif  // SRC_APP_TABLE_MANAGER_INCLUDE_MODELS_APP_TABLE_H_

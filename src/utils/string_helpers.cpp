@@ -1,5 +1,7 @@
 #include "utils/string_helpers.h"
 
+namespace state_table_editor {
+
 vector<string> StringHelpers::Tokenize(
   const std::string str,
   const char delimiter) {
@@ -27,3 +29,5 @@ vector<string> StringHelpers::Tokenize(
 
   return tokens;
 }
+
+} // namespace state_table_editor

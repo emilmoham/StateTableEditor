@@ -2,6 +2,8 @@
 
 #include "utils/string_helpers.h"
 
+namespace state_table_editor {
+
 TEST_CASE("tokenize by space", "[string_helpers]") {
   vector<string> expectedOutput;
 
@@ -85,3 +87,5 @@ TEST_CASE("tokenize by -", "[string_helpers]") {
     REQUIRE(output == expectedOutput);
   }
 }
+
+}  // namespace state_table_editor

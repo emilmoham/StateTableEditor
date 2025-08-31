@@ -14,6 +14,8 @@ using std::unordered_map;
 using std::vector;
 using std::weak_ptr;
 
+namespace state_table_editor {
+
 class State : public IRenderable {
  public:
   static const int MAX_STATES = 20;
@@ -60,5 +62,7 @@ class State : public IRenderable {
   void AddCaller(shared_ptr<State> caller);
   void RemoveCaller(shared_ptr<State> caller);
 };
+
+} // namespace state_table_editor
 
 #endif  // SRC_APP_TABLE_MANAGER_INCLUDE_MODELS_STATE_H_

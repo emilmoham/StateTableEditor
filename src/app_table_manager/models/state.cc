@@ -4,6 +4,8 @@
 
 #include "utils/string_helpers.h"
 
+namespace state_table_editor {
+
 State::State(
   string name,
   string description
@@ -173,3 +175,5 @@ bool State::SetReturnState(int index, shared_ptr<State> state) {
 unordered_map<shared_ptr<State>, int> State::GetCallers() {
   return callers;
 }
+
+} // namespace state_table_editor

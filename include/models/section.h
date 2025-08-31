@@ -12,6 +12,8 @@ using std::string;
 using std::vector;
 using std::weak_ptr;
 
+namespace state_table_editor {
+
 class Section : public IRenderable {
  public:
   explicit Section(vector<string> description = vector<string>());
@@ -24,6 +26,8 @@ class Section : public IRenderable {
  private:
   vector<string> description;
 };
+
+} // namespace state_table_editor
 
 #endif  // SRC_APP_TABLE_MANAGER_INCLUDE_MODELS_SECTION_H_
 

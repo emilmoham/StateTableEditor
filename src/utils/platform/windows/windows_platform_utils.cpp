@@ -4,6 +4,8 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
+namespace state_table_editor {
+
 std::string PlatformUtils::OpenFile(GLFWwindow* window, const char* filter) {
   OPENFILENAMEA ofn;
   CHAR szFile[260] = { 0 };
@@ -28,3 +30,5 @@ std::string PlatformUtils::OpenFile(GLFWwindow* window, const char* filter) {
 std::string PlatformUtils::SaveFile(GLFWwindow* window, const char* fitler) {
   return std::string();
 }
+
+} // namespace state_table_editor
