@@ -5,6 +5,7 @@ project(state_table_editor)
 add_executable(${PROJECT_NAME} main.cc)
 
 add_subdirectory(app_table_manager)
+add_subdirectory(ui)
 add_subdirectory(utils)
 
 # Add imgui
@@ -37,4 +38,5 @@ target_link_libraries(
   glfw
   OpenGL::GL
   state_table_editor_utils
+  state_table_editor_ui
 )

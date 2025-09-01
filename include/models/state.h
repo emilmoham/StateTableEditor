@@ -1,5 +1,5 @@
-#ifndef SRC_APP_TABLE_MANAGER_INCLUDE_MODELS_STATE_H_
-#define SRC_APP_TABLE_MANAGER_INCLUDE_MODELS_STATE_H_
+#ifndef STATE_TABLE_EDITOR_INCLUDE_MODELS_STATE_H_
+#define STATE_TABLE_EDITOR_INCLUDE_MODELS_STATE_H_
 
 #include <memory>
 #include <string>
@@ -65,4 +65,4 @@ class State : public IRenderable {
 
 } // namespace state_table_editor
 
-#endif  // SRC_APP_TABLE_MANAGER_INCLUDE_MODELS_STATE_H_
+#endif  // STATE_TABLE_EDITOR_INCLUDE_MODELS_STATE_H_

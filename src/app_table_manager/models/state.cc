@@ -1,8 +1,8 @@
-#include <state_table_editor/models/state.h>
+#include <models/state.h>
 
 #include <regex>
 
-#include <state_table_editor/utils/string_helpers.h>
+#include <utils/string_helpers.h>
 
 namespace state_table_editor {
 

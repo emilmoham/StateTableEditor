@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <state_table_editor/models/state.h>
+#include <models/state.h>
 
 using std::shared_ptr;
 using std::string;

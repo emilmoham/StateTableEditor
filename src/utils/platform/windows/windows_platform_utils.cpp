@@ -1,4 +1,4 @@
-#include <state_table_editor/utils/platform_utils.h>
+#include <utils/platform_utils.h>
 
 #include <Windows.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
