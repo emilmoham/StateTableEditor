@@ -12,7 +12,7 @@ class Console {
   Console();
   ~Console();
 
-  void Draw();
+  void Render();
 
   void ClearLog();
   void AddLog(const char *log);

@@ -1,6 +1,7 @@
-#include <utils/platform_utils.h>
+#include "utils/platform_utils.h"
 
 #include <Windows.h>
+
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 

@@ -1,5 +1,6 @@
-#include <ui/console.h>
-#include <imgui.h>
+#include "ui/console.h"
+
+#include "imgui.h"
 
 namespace state_table_editor {
 
@@ -25,7 +26,7 @@ void Console::AddLog(const char *log) {
   items_.push_back(mem_log);
 }
 
-void Console::Draw() {
+void Console::Render() {
   ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
   ImGui::Begin("Console");
 
