@@ -11,12 +11,12 @@ target_include_directories(
 
 target_sources(${PROJECT_NAME}
   PRIVATE
-  string_helpers.cpp
+  string_helpers.cc
 )
 
 if (WIN32)
   target_sources(${PROJECT_NAME}
     PRIVATE
-    platform/windows/windows_platform_utils.cpp
+    platform/windows/windows_platform_utils.cc
   )
 endif()
