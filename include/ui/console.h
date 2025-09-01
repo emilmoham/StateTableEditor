@@ -20,7 +20,7 @@ class Console {
   private:
     std::vector<std::shared_ptr<std::string>> items_;
     bool auto_scroll_;
-    bool scroll_to_bottom;
+    bool scroll_to_bottom_;
 };
 
 }
