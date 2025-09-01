@@ -8,6 +8,16 @@ add_subdirectory(app_table_manager)
 add_subdirectory(ui)
 add_subdirectory(utils)
 
+target_include_directories(
+  ${PROJECT_NAME}
+  PRIVATE 
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/lib/glfw/inlcude
+  ${CMAKE_SOURCE_DIR}/lib/imgui
+  ${CMAKE_SOURCE_DIR}/lib/imgui/backends
+  ${CMAKE_SOURCE_DIR}/lib/imgui/misc/cpp
+)
+
 # Add imgui
 target_sources(${PROJECT_NAME}
   PRIVATE
@@ -19,16 +29,6 @@ target_sources(${PROJECT_NAME}
   ${CMAKE_SOURCE_DIR}/lib/imgui/backends/imgui_impl_glfw.cpp
   ${CMAKE_SOURCE_DIR}/lib/imgui/backends/imgui_impl_opengl3.cpp
   ${CMAKE_SOURCE_DIR}/lib/imgui/misc/cpp/imgui_stdlib.cpp
-)
-
-target_include_directories(
-  ${PROJECT_NAME}
-  PRIVATE 
-  ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/lib/glfw/inlcude
-  ${CMAKE_SOURCE_DIR}/lib/imgui
-  ${CMAKE_SOURCE_DIR}/lib/imgui/backends
-  ${CMAKE_SOURCE_DIR}/lib/imgui/misc/cpp
 )
 
 target_link_libraries(
