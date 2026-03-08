@@ -5,14 +5,16 @@
 #include <string>
 #include <vector>
 
+#include "panel.h"
+
 namespace state_table_editor {
 
-class Console {
+class Console : public IPanel {
  public:
   Console();
   ~Console();
 
-  void Render();
+  void Render() override;
 
   void ClearLog();
   void AddLog(const char *log);

@@ -39,7 +39,11 @@ ApplicationWindow::ApplicationWindow() {
 ApplicationWindow::~ApplicationWindow() {
 }
 
-void ApplicationWindow::StartRenderLoop(std::function<void()>& render) {
+void ApplicationWindow::AddPanel(IPanel* panel) {
+  panels_.push_back(panel);
+}
+
+void ApplicationWindow::StartRenderLoop() {
   glfwSetErrorCallback(glfw_error_callback);
   if (!glfwInit())
     return;
@@ -151,7 +155,9 @@ void ApplicationWindow::StartRenderLoop(std::function<void()>& render) {
     if (show_demo_window_)
       ImGui::ShowDemoWindow(&show_demo_window_);
     
-    render();
+    for (IPanel* panel: panels_) {
+      panel->Render();
+    }
     
     // Rendering
     ImGui::Render();
