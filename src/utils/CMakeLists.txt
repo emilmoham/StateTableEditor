@@ -6,12 +6,17 @@ target_include_directories(
   ${PROJECT_NAME}
   PRIVATE
   ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/lib/glfw/include
 )
 
 target_sources(${PROJECT_NAME}
   PRIVATE
   string_helpers.cc
+)
+
+target_link_libraries(
+  ${PROJECT_NAME}
+  PRIVATE
+  glfw
 )
 
 if (WIN32)

@@ -1,8 +1,17 @@
 {
-  "files.associations": {
-    "memory": "cpp",
-    "vector": "cpp",
-    "unordered_map": "cpp",
-    "xstring": "cpp",
+  "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+  "C_Cpp.codeAnalysis.clangTidy.checks.enabled": [
+    "cppcoreguidelines-*",
+    "clang-analyzer-*",
+    "modernize-*"
+  ],
+  "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
+    "modernize-use-trailing-return-type"
+  ],
+  "C_Cpp.codeAnalysis.clangTidy.codeAction.formatFixes": true,
+  
+  "C_Cpp.codeAnalysis.exclude": {
+    "${workspaceFolder}/build": true,
+    "${workspaceFolder}/external": true
   }
 }

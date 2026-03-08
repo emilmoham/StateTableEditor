@@ -3,27 +3,37 @@
 
 #include "imgui.h"
 
-int main() {
-  // AppTable appTable("samples/sample1.app");
-  // std::cout << "Reading file contents:" << std::endl;
-  // appTable.Read();
+int main()
+{
+    // AppTable appTable("samples/sample1.app");
+    // std::cout << "Reading file contents:" << std::endl;
+    // appTable.Read();
 
-  state_table_editor::Console console;
-  state_table_editor::ApplicationWindow applicationWindow;
+    int x;
+    
+    state_table_editor::Console console;
+    state_table_editor::ApplicationWindow applicationWindow;
 
-  std::function<void()> render = []() {
-    ImGui::BeginMainMenuBar();
-    if (ImGui::BeginMenu("File"))
+    std::function<void()> render = []()
     {
-      if (ImGui::MenuItem("New", "Ctrl+N")) {  }
-      if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-      if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-      ImGui::EndMenu();
-    }
-    ImGui::EndMainMenuBar();
-  };
+        ImGui::BeginMainMenuBar();
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("New", "Ctrl+N"))
+            {
+            }
+            if (ImGui::MenuItem("Open", "Ctrl+O"))
+            {
+            }
+            if (ImGui::MenuItem("Save", "Ctrl+S"))
+            {
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    };
 
-  applicationWindow.StartRenderLoop(render);
+    applicationWindow.StartRenderLoop(render);
 
-  return 0;
+    return 0;
 }
