@@ -12,15 +12,10 @@ namespace state_table_editor {
 class Console : public IPanel {
  public:
   Console();
-  ~Console();
 
   void Render() override;
-
-  void ClearLog();
-  void AddLog(const char *log);
  
   private:
-    std::vector<std::shared_ptr<std::string>> items_;
     bool auto_scroll_;
     bool scroll_to_bottom_;
 };

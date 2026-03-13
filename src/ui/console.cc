@@ -1,40 +1,21 @@
 #include "ui/console.h"
 
 #include "imgui.h"
+#include "core/logging/log.h"
 
 namespace state_table_editor {
 
-Console::Console() {
-  ClearLog();
-  auto_scroll_ = true;
-  scroll_to_bottom_ = false;
-
-  AddLog("Welcome to State Table Editor!");
-}
-
-Console::~Console() {
-  ClearLog();
-}
-
-void Console::ClearLog() {
-  items_.clear();  
-}
-
-void Console::AddLog(const char *log) {
-  std::string log_str(log);
-  std::shared_ptr<std::string> mem_log = std::make_shared<std::string>(log_str);
-  items_.push_back(mem_log);
-}
+Console::Console(): auto_scroll_(true), scroll_to_bottom_(false) {}
 
 void Console::Render() {
   ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
   ImGui::Begin("Console");
 
-  if (ImGui::SmallButton("Add Debug Text"))  { AddLog("some more text"); AddLog("display very important message here!"); }
+  if (ImGui::SmallButton("Add Debug Text"))  { Log::Info("some more text"); Log::Warning("display very important message here!"); }
   ImGui::SameLine();
-  if (ImGui::SmallButton("Add Debug Error")) { AddLog("[error] something went wrong"); }
+  if (ImGui::SmallButton("Add Debug Error")) { Log::Error("something went wrong"); }
   ImGui::SameLine();
-  if (ImGui::SmallButton("Clear"))           { ClearLog(); }
+  if (ImGui::SmallButton("Clear"))           { Log::Get().Clear(); }
 
   ImGui::Separator();
 
@@ -54,16 +35,16 @@ void Console::Render() {
   )) {
 
     if (ImGui::BeginPopupContextWindow()) {
-      if (ImGui::Selectable("Clear")) ClearLog();
+      if (ImGui::Selectable("Clear")) Log::Get().Clear();
       ImGui::EndPopup();
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
-    for (std::shared_ptr<std::string> item : items_)
+    for (const LogMessage& item : Log::Get().Messages())
     {
       // Normally you would store more information in your item than just a string.
       // (e.g. make Items[] an array of structure, store color/type etc.)
-      ImGui::TextUnformatted(item->c_str());
+      ImGui::Text("[ %s ] %s", ToString(item.level), item.msg.c_str());
 
       // Keep up at the bottom of the scroll region if we were already at the bottom at the beginning of the frame.
       // Using a scrollbar or mouse-wheel will take away from the bottom edge.
