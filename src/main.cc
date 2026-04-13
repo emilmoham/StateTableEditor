@@ -1,27 +1,23 @@
 #include "ui/application_window.h"
 #include "ui/console.h"
-#include "ui/state_table_panel.h"
-
-#include "imgui.h"
-#include "models/app_table.h"
+#include "ui/tabbed_table_panel.h"
 
 int main()
 {
-    state_table_editor::AppTable app_table("samples/sample1.app");
-    app_table.Read();
+    state_table_editor::TabbedTablePanel tabbed_panel;
+    tabbed_panel.NewTable();
 
     state_table_editor::Console console;
-    state_table_editor::StateTablePanel state_table_panel(&app_table);
     state_table_editor::ApplicationWindow applicationWindow;
 
-    applicationWindow.AddPanel(&state_table_panel);
+    applicationWindow.AddPanel(&tabbed_panel);
     applicationWindow.AddPanel(&console);
 
-    applicationWindow.SetOnNew([&app_table]() {
-        app_table.Reset();
+    applicationWindow.SetOnNew([&tabbed_panel]() {
+        tabbed_panel.NewTable();
     });
-    applicationWindow.SetOnOpen([&app_table](const std::string& path) {
-        app_table.Load(path);
+    applicationWindow.SetOnOpen([&tabbed_panel](const std::string& path) {
+        tabbed_panel.OpenFile(path);
     });
 
     applicationWindow.StartRenderLoop();

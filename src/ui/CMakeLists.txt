@@ -13,6 +13,7 @@ target_sources (${PROJECT_NAME}
   application_window.cc
   console.cc
   state_table_panel.cc
+  tabbed_table_panel.cc
 )
 
 target_link_libraries(
