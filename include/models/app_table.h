@@ -25,6 +25,8 @@ class AppTable {
   int GetStateCount();
   shared_ptr<State> GetState(int id);
 
+  const vector<shared_ptr<IRenderable>>& GetRenderables() const;
+
   bool InsertState(
     shared_ptr<State> stateToAdd =
       shared_ptr<State>(new State("myNewState", "My new state")),

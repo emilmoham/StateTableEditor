@@ -10,6 +10,10 @@ namespace state_table_editor {
 
 AppTable::AppTable(string filename) : filename(filename) {}
 
+const vector<shared_ptr<IRenderable>>& AppTable::GetRenderables() const {
+  return renderables;
+}
+
 AppTable::ParseState AppTable::ParseHeader(std::string line) {
   return line.compare("#$HEADER; NULL") == 0 ? Next : Error;
 }

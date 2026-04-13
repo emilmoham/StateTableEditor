@@ -4,6 +4,9 @@ project(state_table_editor)
 
 add_executable(${PROJECT_NAME} main.cc)
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+
 add_subdirectory(app_table_manager)
 add_subdirectory(core)
 add_subdirectory(ui)
