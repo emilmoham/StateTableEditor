@@ -20,8 +20,10 @@ class AppTable {
   explicit AppTable(string filename);
 
   int Read();
+  void Load(string filename);
+  void Reset();
   void Print();
- 
+
   int GetStateCount();
   shared_ptr<State> GetState(int id);
 
@@ -71,6 +73,8 @@ class AppTable {
     TableState,
     TableSection
   };
+
+  void Clear();
 
   ParseState ParseHeader(string line);
   ParseState ParseNextLine(string line);

@@ -20,6 +20,7 @@ target_link_libraries(
   PRIVATE
   app_table_manager
   state_table_editor_core
+  state_table_editor_utils
   imgui
   glfw
 )

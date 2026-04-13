@@ -17,6 +17,13 @@ int main()
     applicationWindow.AddPanel(&state_table_panel);
     applicationWindow.AddPanel(&console);
 
+    applicationWindow.SetOnNew([&app_table]() {
+        app_table.Reset();
+    });
+    applicationWindow.SetOnOpen([&app_table](const std::string& path) {
+        app_table.Load(path);
+    });
+
     applicationWindow.StartRenderLoop();
 
     return 0;

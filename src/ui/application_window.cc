@@ -1,6 +1,9 @@
 #include "ui/application_window.h"
 
 #include <iostream>
+#include <string>
+
+#include "utils/platform_utils.h"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -33,7 +36,7 @@ static void glfw_error_callback(int error, const char* description)
 namespace state_table_editor {
 
 ApplicationWindow::ApplicationWindow() {
-  show_demo_window_ = true;
+  show_demo_window_ = false;
 }
 
 ApplicationWindow::~ApplicationWindow() {
@@ -72,10 +75,11 @@ void ApplicationWindow::StartRenderLoop() {
 #endif
 
   // Create window with graphics context
-  GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
-  if (window == nullptr)
+  window_ = glfwCreateWindow(1280, 720, "State Table Editor", nullptr, nullptr);
+  if (window_ == nullptr)
       return;
-  glfwMakeContextCurrent(window);
+  GLFWwindow* window = window_;
+  glfwMakeContextCurrent(window_);
   glfwSwapInterval(1); // Enable vsync
 
   // Setup Dear ImGui context
@@ -151,6 +155,34 @@ void ApplicationWindow::StartRenderLoop() {
     // Add Dockspace
     ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
+    if (ImGui::BeginMainMenuBar()) {
+      if (ImGui::BeginMenu("File")) {
+        if (ImGui::MenuItem("New", "Ctrl+N")) {
+          if (on_new_) on_new_();
+        }
+        if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+          std::string path = PlatformUtils::OpenFile(
+            window_, "App Files\0*.app\0All Files\0*.*\0");
+          if (!path.empty() && on_open_) on_open_(path);
+        }
+        ImGui::Separator();
+        if (ImGui::MenuItem("Quit", "Alt+F4")) {
+          glfwSetWindowShouldClose(window_, true);
+        }
+        ImGui::EndMenu();
+      }
+      ImGui::EndMainMenuBar();
+    }
+
+    if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_N)) {
+      if (on_new_) on_new_();
+    }
+    if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_O)) {
+      std::string path = PlatformUtils::OpenFile(
+        window_, "App Files\0*.app\0All Files\0*.*\0");
+      if (!path.empty() && on_open_) on_open_(path);
+    }
+
     // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
     if (show_demo_window_)
       ImGui::ShowDemoWindow(&show_demo_window_);
@@ -194,9 +226,16 @@ void ApplicationWindow::StartRenderLoop() {
   glfwTerminate();
 }
 
+void ApplicationWindow::SetOnNew(std::function<void()> callback) {
+  on_new_ = callback;
+}
+
+void ApplicationWindow::SetOnOpen(std::function<void(const std::string&)> callback) {
+  on_open_ = callback;
+}
+
 void ApplicationWindow::ToggleDemoWindow() {
   show_demo_window_ = !show_demo_window_;
-
 };
 
 } // namespace state_table_editor

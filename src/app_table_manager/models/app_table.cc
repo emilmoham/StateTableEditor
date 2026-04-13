@@ -10,6 +10,22 @@ namespace state_table_editor {
 
 AppTable::AppTable(string filename) : filename(filename) {}
 
+void AppTable::Clear() {
+  renderables.clear();
+  stateMap.clear();
+}
+
+void AppTable::Load(string new_filename) {
+  Clear();
+  filename = new_filename;
+  Read();
+}
+
+void AppTable::Reset() {
+  Clear();
+  filename = "";
+}
+
 const vector<shared_ptr<IRenderable>>& AppTable::GetRenderables() const {
   return renderables;
 }
